@@ -1,0 +1,936 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<title>עלות רכב · Trip Computer</title>
+<style>
+  /* ============================ TOKENS ============================ */
+  :root{
+    color-scheme: light;
+    --bg:#f7f5ef; --surface:#ffffff; --surface-2:#f1eee3; --inset:#eeeadd;
+    --ink:#1c1b16; --ink-2:#56534a; --muted:#8a867a; --line:#e4e0d3;
+    --accent:#b8860b; --accent-2:#946c08; --accent-ink:#1e1a0c;
+    --plate-yellow:#f4c430; --plate-ink:#141310; --plate-blue:#1f3a93;
+    --good:#1c7c3b; --warn:#9a6a12; --bad:#c0392b;
+    --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300;
+    --shadow:0 1px 2px rgba(30,28,20,.06), 0 14px 34px -18px rgba(30,28,20,.22);
+    --radius:14px;
+    --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", "Courier New", monospace;
+    --sans:"Rubik", "Helvetica Neue", "Segoe UI", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --bg:#15140f; --surface:#201e17; --surface-2:#2a2820; --inset:#2f2c22;
+      --ink:#f2efe4; --ink-2:#b6b1a1; --muted:#8b8672; --line:#37342b;
+      --accent:#f2b705; --accent-2:#f2b705; --accent-ink:#1e1a0c;
+      --plate-yellow:#f4c430; --plate-ink:#141310; --plate-blue:#31489f;
+      --good:#5fbf7a; --warn:#e0a94a; --bad:#e4634f;
+      --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#22a022;
+      --shadow:0 1px 0 rgba(0,0,0,.4), 0 18px 40px -22px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --bg:#15140f; --surface:#201e17; --surface-2:#2a2820; --inset:#2f2c22;
+    --ink:#f2efe4; --ink-2:#b6b1a1; --muted:#8b8672; --line:#37342b;
+    --accent:#f2b705; --accent-2:#f2b705; --accent-ink:#1e1a0c;
+    --plate-yellow:#f4c430; --plate-ink:#141310; --plate-blue:#31489f;
+    --good:#5fbf7a; --warn:#e0a94a; --bad:#e4634f;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#22a022;
+    --shadow:0 1px 0 rgba(0,0,0,.4), 0 18px 40px -22px rgba(0,0,0,.7);
+  }
+
+  /* ============================ BASE ============================ */
+  *{box-sizing:border-box}
+  body{background:var(--bg); color:var(--ink); font-family:var(--sans);
+    line-height:1.55; -webkit-font-smoothing:antialiased; margin:0;}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 clamp(14px,3vw,28px) 72px;}
+  h1,h2,h3{margin:0; text-wrap:balance; line-height:1.2}
+  a{color:var(--accent-2)}
+  button{font-family:inherit}
+  input,select{font-family:inherit; color:inherit}
+  :focus-visible{outline:2.5px solid var(--accent-2); outline-offset:2px; border-radius:6px}
+  @media (prefers-reduced-motion: reduce){ *{transition:none!important; animation:none!important} }
+
+  .tt{font-family:var(--mono); text-transform:uppercase; letter-spacing:.16em;
+    font-size:11px; font-weight:500; color:var(--muted);}
+  .num{font-family:var(--mono); font-variant-numeric:tabular-nums; font-feature-settings:"tnum"}
+
+  /* ============================ HEADER ============================ */
+  header{position:sticky; top:0; z-index:20; background:color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter:blur(10px); border-bottom:1px solid var(--line);}
+  .bar{max-width:1080px; margin:0 auto; padding:10px clamp(14px,3vw,28px);
+    display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
+  .brand{display:flex; align-items:center; gap:10px; margin-inline-end:auto}
+  .brand .dot{width:26px; height:26px; border-radius:7px; background:var(--plate-yellow);
+    border:2px solid var(--plate-ink); display:grid; place-items:center;
+    font-family:var(--mono); font-weight:600; font-size:12px; color:var(--plate-ink)}
+  .brand b{font-weight:600; font-size:15px; letter-spacing:.01em}
+  .seg{display:inline-flex; border:1px solid var(--line); border-radius:9px; overflow:hidden; background:var(--surface)}
+  .seg button{border:0; background:transparent; color:var(--ink-2); padding:7px 11px;
+    font-size:12.5px; font-weight:500; cursor:pointer; font-family:var(--mono)}
+  .seg button[aria-pressed="true"]{background:var(--accent); color:var(--accent-ink)}
+  .icobtn{border:1px solid var(--line); background:var(--surface); color:var(--ink);
+    width:36px; height:34px; border-radius:9px; cursor:pointer; font-size:15px; display:grid; place-items:center}
+
+  /* ============================ HERO / PLATE ============================ */
+  .hero{padding:34px 0 8px}
+  .hero .tt{margin-bottom:10px}
+  .hero h1{font-size:clamp(24px,4.4vw,38px); font-weight:700; letter-spacing:-.01em; max-width:20ch}
+  .hero p.lede{color:var(--ink-2); margin:12px 0 24px; max-width:56ch; font-size:15.5px}
+  .platewrap{display:flex; gap:12px; align-items:stretch; flex-wrap:wrap}
+  .plate{display:flex; align-items:stretch; background:var(--plate-yellow);
+    border:3px solid var(--plate-ink); border-radius:12px; overflow:hidden;
+    box-shadow:var(--shadow); flex:1 1 320px; min-width:260px}
+  .plate .il{background:var(--plate-blue); color:#fff; width:46px; flex:0 0 46px;
+    display:flex; flex-direction:column; align-items:center; justify-content:space-between;
+    padding:8px 0; font-family:var(--mono); font-weight:600}
+  .plate .il .stars{font-size:9px; letter-spacing:1px; opacity:.9}
+  .plate .il .cc{font-size:16px}
+  .plate input{flex:1; border:0; background:transparent; color:var(--plate-ink);
+    font-family:var(--mono); font-weight:600; letter-spacing:.14em;
+    font-size:clamp(26px,6vw,40px); text-align:center; padding:10px 6px; min-width:0}
+  .plate input::placeholder{color:rgba(20,19,16,.4)}
+  .btn{border:0; border-radius:12px; padding:0 22px; min-height:58px; cursor:pointer;
+    font-weight:600; font-size:15px; background:var(--accent); color:var(--accent-ink);
+    display:inline-flex; align-items:center; gap:8px; justify-content:center; flex:0 0 auto}
+  .btn.secondary{background:var(--surface); color:var(--ink); border:1px solid var(--line); min-height:44px; font-size:13.5px; padding:0 16px}
+  .btn:disabled{opacity:.55; cursor:progress}
+  .status{margin-top:12px; font-size:13.5px; min-height:20px; display:flex; align-items:center; gap:8px}
+  .status .pin{width:8px; height:8px; border-radius:50%; flex:0 0 auto}
+  .status.ok .pin{background:var(--good)} .status.warn .pin{background:var(--warn)}
+  .status.err .pin{background:var(--bad)} .status.info .pin{background:var(--muted)}
+  .status.ok{color:var(--good)} .status.warn{color:var(--warn)} .status.err{color:var(--bad)} .status.info{color:var(--muted)}
+
+  /* ============================ RESULTS ============================ */
+  section.block{margin-top:34px}
+  .banner{display:flex; gap:10px; align-items:center; background:var(--surface-2);
+    border:1px dashed var(--line); border-radius:12px; padding:10px 14px; font-size:13px; color:var(--ink-2); margin-bottom:18px}
+  .tiles{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
+  .tile{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:18px 18px 16px; box-shadow:var(--shadow)}
+  .tile .tt{margin-bottom:10px}
+  .tile .big{font-family:var(--mono); font-weight:600; font-size:clamp(22px,4.4vw,32px);
+    letter-spacing:-.02em; line-height:1}
+  .tile .sub{color:var(--muted); font-size:12px; margin-top:8px}
+  .tile.lead{background:var(--plate-ink); color:#f4f1e6; border-color:var(--plate-ink)}
+  .tile.lead .tt{color:rgba(244,241,230,.62)}
+  .tile.lead .sub{color:rgba(244,241,230,.6)}
+
+  .chartcard{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    box-shadow:var(--shadow); padding:20px; margin-top:16px}
+  .chartcard h3{font-size:15px; font-weight:600; margin-bottom:4px}
+  .chartcard .cap{color:var(--muted); font-size:12.5px; margin-bottom:18px}
+  .stack{display:flex; gap:2px; width:100%; height:48px; background:var(--inset);
+    border-radius:10px; overflow:hidden; padding:2px}
+  .stack .seg-b{height:100%; min-width:2px; display:flex; align-items:center; justify-content:center;
+    overflow:hidden; position:relative}
+  .stack .seg-b:first-child{border-radius:8px 2px 2px 8px}
+  .stack .seg-b:last-child{border-radius:2px 8px 8px 2px}
+  [dir="rtl"] .stack .seg-b:first-child{border-radius:2px 8px 8px 2px}
+  [dir="rtl"] .stack .seg-b:last-child{border-radius:8px 2px 2px 8px}
+  .stack .seg-b span{font-family:var(--mono); font-size:11px; font-weight:600; color:#fff;
+    text-shadow:0 1px 2px rgba(0,0,0,.45); white-space:nowrap; padding:0 6px}
+
+  table.bd{width:100%; border-collapse:collapse; margin-top:20px; font-size:13.5px}
+  table.bd th{text-align:start; font-family:var(--mono); text-transform:uppercase; letter-spacing:.12em;
+    font-size:10.5px; font-weight:500; color:var(--muted); padding:6px 10px; border-bottom:1px solid var(--line)}
+  table.bd td{padding:10px; border-bottom:1px solid var(--line); vertical-align:middle}
+  table.bd tr:last-child td{border-bottom:0}
+  .sw{display:inline-block; width:11px; height:11px; border-radius:3px; margin-inline-end:8px; vertical-align:-1px}
+  table.bd td.n{text-align:end; font-family:var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap}
+  .minibar{height:6px; border-radius:4px; background:var(--inset); overflow:hidden; margin-top:5px}
+  .minibar i{display:block; height:100%; border-radius:4px}
+  tr.total td{font-weight:600; border-top:2px solid var(--ink); border-bottom:0; padding-top:12px}
+  tr.total td.n{font-size:15px}
+
+  /* ============================ FORMS ============================ */
+  details.panel{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    box-shadow:var(--shadow); margin-top:14px; overflow:hidden}
+  details.panel>summary{cursor:pointer; list-style:none; padding:16px 20px; display:flex;
+    align-items:center; gap:12px; font-weight:600; font-size:14.5px}
+  details.panel>summary::-webkit-details-marker{display:none}
+  details.panel>summary .chev{margin-inline-start:auto; color:var(--muted); transition:transform .2s; font-family:var(--mono)}
+  details.panel[open]>summary .chev{transform:rotate(90deg)}
+  details.panel>summary .ic{width:28px; height:28px; border-radius:8px; background:var(--surface-2);
+    display:grid; place-items:center; font-size:14px; flex:0 0 auto}
+  .pbody{padding:4px 20px 22px; border-top:1px solid var(--line)}
+  .grid{display:grid; grid-template-columns:repeat(2,1fr); gap:14px 16px; margin-top:16px}
+  .field{display:flex; flex-direction:column; gap:6px}
+  .field label{font-size:12.5px; color:var(--ink-2); font-weight:500}
+  .field .hint{font-size:11px; color:var(--muted)}
+  .field input, .field select{border:1px solid var(--line); background:var(--surface-2);
+    border-radius:9px; padding:10px 12px; font-size:14px; width:100%}
+  .field input:focus, .field select:focus{background:var(--surface)}
+  .field input.num{font-family:var(--mono)}
+  .rowbtns{display:flex; gap:10px; flex-wrap:wrap; margin-top:16px}
+
+  .enc-out{width:100%; min-height:104px; border:1px solid var(--line); background:var(--surface-2);
+    border-radius:10px; padding:10px 12px; font-family:var(--mono); font-size:11.5px; color:var(--ink-2);
+    resize:vertical; margin-top:12px}
+  .kv{display:flex; gap:8px; flex-wrap:wrap; font-size:12px; color:var(--muted); margin-top:10px}
+  .kv span{background:var(--surface-2); border:1px solid var(--line); border-radius:999px; padding:3px 10px; font-family:var(--mono)}
+
+  footer{margin-top:44px; padding-top:18px; border-top:1px solid var(--line);
+    color:var(--muted); font-size:12px; line-height:1.7}
+
+  @media (max-width:720px){
+    .tiles{grid-template-columns:1fr}
+    .grid{grid-template-columns:1fr}
+    .brand b{display:none}
+  }
+</style>
+
+<header>
+  <div class="bar">
+    <div class="brand">
+      <span class="dot">₪</span>
+      <b data-i18n="appTitle">עלות החזקת רכב</b>
+    </div>
+    <div class="seg" id="langSeg" role="group" aria-label="Language">
+      <button data-lang="he" type="button">עב</button>
+      <button data-lang="en" type="button">EN</button>
+      <button data-lang="ru" type="button">RU</button>
+    </div>
+    <button class="icobtn" id="themeBtn" type="button" aria-label="Theme">◐</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="tt" data-i18n="heroKicker">מחשבון · שוק ישראלי · 2026</div>
+    <h1 data-i18n="heroTitle">כמה באמת עולה לך הרכב בכל חודש</h1>
+    <p class="lede" data-i18n="heroLede">הזן מספר רישוי — נשלוף מפרט מהמאגר הממשלתי, ונחשב אגרה, ביטוח, דלק, ירידת ערך ותחזוקה. כל הנתונים נשארים בדפדפן שלך.</p>
+    <div class="platewrap">
+      <div class="plate">
+        <div class="il"><span class="stars">★ ★ ★</span><span class="cc">IL</span></div>
+        <input id="plate" inputmode="numeric" autocomplete="off" spellcheck="false"
+               maxlength="10" placeholder="12-345-67" aria-label="מספר רישוי">
+      </div>
+      <button class="btn" id="lookupBtn" type="button"><span data-i18n="lookupBtn">שליפת נתונים</span></button>
+    </div>
+    <div class="status info" id="status"><span class="pin"></span><span id="statusText" data-i18n="statusIdle">הזן 7–8 ספרות של מספר הרישוי</span></div>
+  </div>
+
+  <section class="block" id="results" aria-live="polite"></section>
+
+  <section class="block">
+    <div class="tt" data-i18n="inputsKicker" style="margin-bottom:6px">כוונון הנתונים</div>
+    <details class="panel" id="pVehicle" open>
+      <summary><span class="ic">🚗</span><span data-i18n="secVehicle">מפרט הרכב</span><span class="chev">›</span></summary>
+      <div class="pbody"><div class="grid" id="gridVehicle"></div></div>
+    </details>
+    <details class="panel" id="pUsage">
+      <summary><span class="ic">⛽</span><span data-i18n="secUsage">שימוש ועלויות שוטפות</span><span class="chev">›</span></summary>
+      <div class="pbody"><div class="grid" id="gridUsage"></div></div>
+    </details>
+    <details class="panel" id="pDriver">
+      <summary><span class="ic">🪪</span><span data-i18n="secDriver">פרופיל נהג וביטוח</span><span class="chev">›</span></summary>
+      <div class="pbody"><div class="grid" id="gridDriver"></div></div>
+    </details>
+    <details class="panel" id="pSec">
+      <summary><span class="ic">🔒</span><span data-i18n="secCrypto">שמירה מוצפנת (AES‑256‑GCM)</span><span class="chev">›</span></summary>
+      <div class="pbody">
+        <p style="font-size:13px;color:var(--ink-2);margin:14px 0 0" data-i18n="cryptoDesc">
+          הנתונים מוצפנים בדפדפן עם AES‑256‑GCM ומפתח הנגזר מסיסמה (PBKDF2‑SHA‑256, 250K סבבים). ללא הסיסמה אי אפשר לשחזר.</p>
+        <div class="grid" style="grid-template-columns:1fr">
+          <div class="field">
+            <label for="pass" data-i18n="passLabel">סיסמת הצפנה</label>
+            <input id="pass" type="password" autocomplete="new-password" placeholder="••••••••">
+          </div>
+        </div>
+        <div class="rowbtns">
+          <button class="btn secondary" id="encBtn" type="button" data-i18n="encBtn">הצפן וייצא</button>
+          <button class="btn secondary" id="copyBtn" type="button" data-i18n="copyBtn">העתק</button>
+          <button class="btn secondary" id="dlBtn" type="button" data-i18n="dlBtn">הורד קובץ</button>
+        </div>
+        <textarea class="enc-out num" id="encOut" spellcheck="false" placeholder="—"></textarea>
+        <div class="kv" id="encMeta"></div>
+        <div class="rowbtns">
+          <button class="btn secondary" id="decBtn" type="button" data-i18n="decBtn">פענח וטען מהתיבה</button>
+          <label class="btn secondary" style="cursor:pointer">
+            <span data-i18n="fileBtn">בחר קובץ…</span>
+            <input id="fileIn" type="file" accept=".json,.txt,application/json" hidden>
+          </label>
+          <button class="btn secondary" id="clearBtn" type="button" data-i18n="clearBtn">מחק שמירה מקומית</button>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <footer id="footer"></footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var LS = { get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},
+             set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}},
+             del:function(k){try{localStorage.removeItem(k)}catch(e){}} };
+
+  /* ============================ i18n ============================ */
+  var DICT = {
+    he:{
+      _dir:"rtl", _loc:"he-IL",
+      appTitle:"עלות החזקת רכב",
+      heroKicker:"מחשבון · שוק ישראלי · 2026",
+      heroTitle:"כמה באמת עולה לך הרכב בכל חודש",
+      heroLede:"הזן מספר רישוי — נשלוף מפרט מהמאגר הממשלתי, ונחשב אגרה, ביטוח, דלק, ירידת ערך ותחזוקה. כל הנתונים נשארים בדפדפן שלך.",
+      lookupBtn:"שליפת נתונים",
+      statusIdle:"הזן 7–8 ספרות של מספר הרישוי",
+      statusLoading:"מחפש במאגר משרד התחבורה…",
+      statusFound:"נמצא במאגר הממשלתי — אפשר לערוך כל שדה",
+      statusDemo:"לא נמצא רכב — הוזנו נתוני הדגמה משוערים לפי הספרות. ערוך לפי הרכב שלך",
+      statusOffline:"אין גישה למאגר כרגע — הוזנו נתוני הדגמה. ערוך לפי הרכב שלך",
+      statusShort:"מספר רישוי צריך להיות 7 או 8 ספרות",
+      inputsKicker:"כוונון הנתונים",
+      secVehicle:"מפרט הרכב", secUsage:"שימוש ועלויות שוטפות", secDriver:"פרופיל נהג וביטוח",
+      secCrypto:"שמירה מוצפנת (AES‑256‑GCM)",
+      exampleBanner:"מוצג תרחיש לדוגמה. הזן מספר רישוי או ערוך את השדות למטה לחישוב אמיתי.",
+      tileMonth:"עלות חודשית", tileYear:"עלות שנתית", tilePerKm:"עלות לק\"מ",
+      tileMonthSub:"ממוצע כולל ירידת ערך", tileYearSub:"סך כל ההוצאות בשנה", tilePerKmSub:"לפי הקילומטראז' שהוזן",
+      chartTitle:"פילוח ההוצאה השנתית", chartCap:"חלוקת העלות בין ששת מרכיבי ההחזקה",
+      thCat:"מרכיב", thMonth:"₪ לחודש", thYear:"₪ לשנה", thShare:"נתח",
+      catDepreciation:"ירידת ערך", catFuel:"דלק / אנרגיה", catInsurance:"ביטוח",
+      catFees:"אגרות ורישוי", catMaintenance:"תחזוקה וטיפולים", catMisc:"צמיגים, בלמים, חניה, חירום",
+      totalRow:"סה\"כ החזקה",
+      f_manufacturer:"יצרן", f_model:"דגם", f_year:"שנת ייצור", f_fuel:"סוג הנעה",
+      f_pollution:"קבוצת זיהום (0–15)", f_price:"מחיר מחירון כחדש (₪)", f_value:"שווי נוכחי משוער (₪)",
+      f_valueHint:"מחושב אוטומטית מהמחיר והגיל — ניתן לעדכן",
+      fuel_petrol:"בנזין", fuel_diesel:"דיזל", fuel_hybrid:"היברידי", fuel_electric:"חשמלי",
+      f_km:"קילומטראז' שנתי", f_consFuel:"צריכת דלק (ליטר ל‑100 ק\"מ)", f_consEv:"צריכת חשמל (קוט\"ש ל‑100 ק\"מ)",
+      f_priceFuel:"מחיר דלק (₪ לליטר)", f_priceEv:"מחיר חשמל (₪ לקוט\"ש)",
+      f_parking:"חניה (₪ לחודש)", f_maint:"טיפולים תקופתיים (₪ לשנה)", f_emergency:"קרן חירום לתקלות (₪ לחודש)",
+      f_driverAge:"גיל הנהג", f_yearsLic:"ותק רישיון (שנים)", f_claimsFree:"שנים ללא תביעות (0–9)",
+      f_insType:"סוג ביטוח", ins_mandatory:"חובה בלבד", ins_thirdparty:"חובה + צד ג'", ins_comprehensive:"חובה + מקיף",
+      f_compRate:"פרמיית מקיף (% מהשווי)", f_mandBase:"בסיס ביטוח חובה (₪)", f_tpBase:"בסיס צד ג' (₪)",
+      driverTagYoung:"נהג צעיר", driverTagNew:"נהג חדש", driverTagVet:"נהג ותיק", ncdTag:"הנחת היעדר תביעות",
+      cryptoDesc:"הנתונים מוצפנים בדפדפן עם AES‑256‑GCM ומפתח הנגזר מסיסמה (PBKDF2‑SHA‑256, 250K סבבים). ללא הסיסמה אי אפשר לשחזר.",
+      passLabel:"סיסמת הצפנה", encBtn:"הצפן וייצא", copyBtn:"העתק", dlBtn:"הורד קובץ",
+      decBtn:"פענח וטען מהתיבה", fileBtn:"בחר קובץ…", clearBtn:"מחק שמירה מקומית",
+      needPass:"הזן סיסמה באורך 6 תווים לפחות", encOk:"הוצפן — העתק את הטקסט או הורד את הקובץ",
+      copyOk:"הועתק ללוח", decOk:"פוענח ונטען בהצלחה", decErr:"פענוח נכשל — סיסמה שגויה או קובץ פגום",
+      cleared:"השמירה המקומית נמחקה",
+      footer:"אומדן להמחשה בלבד — לא תחליף להצעת ביטוח, שמאות או נתוני יצרן רשמיים. מקור מפרט הרכב: מאגר משרד התחבורה ב‑data.gov.il. חישובים ומחירים מתעדכנים ידנית ועשויים לסטות מהמציאות. אין באמור ייעוץ פיננסי."
+    },
+    en:{
+      _dir:"ltr", _loc:"en-IL",
+      appTitle:"Car cost of ownership",
+      heroKicker:"Calculator · Israeli market · 2026",
+      heroTitle:"What your car really costs you every month",
+      heroLede:"Enter a licence plate — we pull the spec from the government registry and compute licence fee, insurance, fuel, depreciation and maintenance. Everything stays in your browser.",
+      lookupBtn:"Fetch data",
+      statusIdle:"Enter the 7–8 digits of the plate number",
+      statusLoading:"Searching the Ministry of Transport registry…",
+      statusFound:"Found in the government registry — every field is editable",
+      statusDemo:"No vehicle found — filled estimated demo data from the digits. Edit to match your car",
+      statusOffline:"Registry unreachable right now — filled demo data. Edit to match your car",
+      statusShort:"A plate number must be 7 or 8 digits",
+      inputsKicker:"Tune the inputs",
+      secVehicle:"Vehicle spec", secUsage:"Usage & running costs", secDriver:"Driver profile & insurance",
+      secCrypto:"Encrypted save (AES‑256‑GCM)",
+      exampleBanner:"Showing an example scenario. Enter a plate or edit the fields below for a real calculation.",
+      tileMonth:"Monthly cost", tileYear:"Annual cost", tilePerKm:"Cost per km",
+      tileMonthSub:"average, depreciation included", tileYearSub:"total spend over a year", tilePerKmSub:"based on the mileage entered",
+      chartTitle:"Annual spend breakdown", chartCap:"How the cost splits across the six ownership components",
+      thCat:"Component", thMonth:"₪ / month", thYear:"₪ / year", thShare:"Share",
+      catDepreciation:"Depreciation", catFuel:"Fuel / energy", catInsurance:"Insurance",
+      catFees:"Licence & fees", catMaintenance:"Maintenance & service", catMisc:"Tyres, brakes, parking, emergency",
+      totalRow:"Total ownership",
+      f_manufacturer:"Manufacturer", f_model:"Model", f_year:"Model year", f_fuel:"Drivetrain",
+      f_pollution:"Pollution group (0–15)", f_price:"List price when new (₪)", f_value:"Estimated current value (₪)",
+      f_valueHint:"Auto‑derived from price and age — you can override",
+      fuel_petrol:"Petrol", fuel_diesel:"Diesel", fuel_hybrid:"Hybrid", fuel_electric:"Electric",
+      f_km:"Annual mileage (km)", f_consFuel:"Fuel use (L / 100 km)", f_consEv:"Energy use (kWh / 100 km)",
+      f_priceFuel:"Fuel price (₪ / L)", f_priceEv:"Electricity price (₪ / kWh)",
+      f_parking:"Parking (₪ / month)", f_maint:"Periodic service (₪ / year)", f_emergency:"Breakdown emergency fund (₪ / month)",
+      f_driverAge:"Driver age", f_yearsLic:"Licence tenure (years)", f_claimsFree:"Claims‑free years (0–9)",
+      f_insType:"Insurance type", ins_mandatory:"Compulsory only", ins_thirdparty:"Compulsory + third‑party", ins_comprehensive:"Compulsory + comprehensive",
+      f_compRate:"Comprehensive premium (% of value)", f_mandBase:"Compulsory base (₪)", f_tpBase:"Third‑party base (₪)",
+      driverTagYoung:"Young driver", driverTagNew:"New driver", driverTagVet:"Experienced driver", ncdTag:"No‑claims discount",
+      cryptoDesc:"Data is encrypted in the browser with AES‑256‑GCM and a key derived from your passphrase (PBKDF2‑SHA‑256, 250K rounds). Without the passphrase it cannot be recovered.",
+      passLabel:"Encryption passphrase", encBtn:"Encrypt & export", copyBtn:"Copy", dlBtn:"Download file",
+      decBtn:"Decrypt & load from box", fileBtn:"Choose file…", clearBtn:"Clear local save",
+      needPass:"Enter a passphrase of at least 6 characters", encOk:"Encrypted — copy the text or download the file",
+      copyOk:"Copied to clipboard", decOk:"Decrypted and loaded", decErr:"Decryption failed — wrong passphrase or corrupt file",
+      cleared:"Local save cleared",
+      footer:"Illustrative estimate only — not a substitute for an insurance quote, appraisal or official manufacturer data. Vehicle spec source: Israeli Ministry of Transport registry on data.gov.il. Rates and prices are maintained manually and may drift from reality. Nothing here is financial advice."
+    },
+    ru:{
+      _dir:"ltr", _loc:"ru-RU",
+      appTitle:"Стоимость владения авто",
+      heroKicker:"Калькулятор · рынок Израиля · 2026",
+      heroTitle:"Сколько на самом деле стоит ваш автомобиль в месяц",
+      heroLede:"Введите номер — мы возьмём характеристики из государственного реестра и посчитаем госпошлину, страховку, топливо, амортизацию и обслуживание. Все данные остаются в вашем браузере.",
+      lookupBtn:"Получить данные",
+      statusIdle:"Введите 7–8 цифр номерного знака",
+      statusLoading:"Поиск в реестре Министерства транспорта…",
+      statusFound:"Найдено в государственном реестре — каждое поле можно изменить",
+      statusDemo:"Автомобиль не найден — заполнены примерные демо‑данные по цифрам. Отредактируйте под свою машину",
+      statusOffline:"Реестр сейчас недоступен — заполнены демо‑данные. Отредактируйте под свою машину",
+      statusShort:"Номер должен состоять из 7 или 8 цифр",
+      inputsKicker:"Настройка данных",
+      secVehicle:"Характеристики авто", secUsage:"Пробег и текущие расходы", secDriver:"Профиль водителя и страховка",
+      secCrypto:"Зашифрованное сохранение (AES‑256‑GCM)",
+      exampleBanner:"Показан пример. Введите номер или измените поля ниже для реального расчёта.",
+      tileMonth:"Расходы в месяц", tileYear:"Расходы в год", tilePerKm:"Стоимость за км",
+      tileMonthSub:"в среднем, с учётом амортизации", tileYearSub:"суммарные траты за год", tilePerKmSub:"по указанному пробегу",
+      chartTitle:"Структура годовых расходов", chartCap:"Как стоимость делится между шестью составляющими владения",
+      thCat:"Составляющая", thMonth:"₪ / мес", thYear:"₪ / год", thShare:"Доля",
+      catDepreciation:"Амортизация", catFuel:"Топливо / энергия", catInsurance:"Страховка",
+      catFees:"Госпошлина и регистрация", catMaintenance:"Обслуживание и ТО", catMisc:"Шины, тормоза, парковка, резерв",
+      totalRow:"Итого владение",
+      f_manufacturer:"Производитель", f_model:"Модель", f_year:"Год выпуска", f_fuel:"Тип привода",
+      f_pollution:"Группа загрязнения (0–15)", f_price:"Цена нового по прайсу (₪)", f_value:"Оценочная текущая стоимость (₪)",
+      f_valueHint:"Рассчитано из цены и возраста — можно изменить",
+      fuel_petrol:"Бензин", fuel_diesel:"Дизель", fuel_hybrid:"Гибрид", fuel_electric:"Электро",
+      f_km:"Годовой пробег (км)", f_consFuel:"Расход топлива (л / 100 км)", f_consEv:"Расход энергии (кВт·ч / 100 км)",
+      f_priceFuel:"Цена топлива (₪ / л)", f_priceEv:"Цена электричества (₪ / кВт·ч)",
+      f_parking:"Парковка (₪ / мес)", f_maint:"Периодическое ТО (₪ / год)", f_emergency:"Резерв на поломки (₪ / мес)",
+      f_driverAge:"Возраст водителя", f_yearsLic:"Стаж прав (лет)", f_claimsFree:"Лет без страховых случаев (0–9)",
+      f_insType:"Тип страховки", ins_mandatory:"Только обязательная", ins_thirdparty:"Обязательная + третьи лица", ins_comprehensive:"Обязательная + КАСКО",
+      f_compRate:"Премия КАСКО (% от стоимости)", f_mandBase:"База обязательной (₪)", f_tpBase:"База третьих лиц (₪)",
+      driverTagYoung:"Молодой водитель", driverTagNew:"Новичок", driverTagVet:"Опытный водитель", ncdTag:"Скидка за безаварийность",
+      cryptoDesc:"Данные шифруются в браузере алгоритмом AES‑256‑GCM ключом из вашей парольной фразы (PBKDF2‑SHA‑256, 250K итераций). Без фразы восстановить нельзя.",
+      passLabel:"Парольная фраза", encBtn:"Зашифровать и экспортировать", copyBtn:"Копировать", dlBtn:"Скачать файл",
+      decBtn:"Расшифровать из поля", fileBtn:"Выбрать файл…", clearBtn:"Очистить локальное сохранение",
+      needPass:"Введите фразу не короче 6 символов", encOk:"Зашифровано — скопируйте текст или скачайте файл",
+      copyOk:"Скопировано", decOk:"Расшифровано и загружено", decErr:"Ошибка расшифровки — неверная фраза или повреждённый файл",
+      cleared:"Локальное сохранение очищено",
+      footer:"Ориентировочная оценка — не заменяет страховое предложение, оценку эксперта или официальные данные производителя. Источник характеристик: реестр Министерства транспорта Израиля на data.gov.il. Ставки и цены обновляются вручную и могут отличаться от реальных. Это не финансовая консультация."
+    }
+  };
+
+  /* ============================ STATE ============================ */
+  var DEF = {
+    manufacturer:"Toyota", model:"Corolla Hybrid", year:2021, fuel:"hybrid",
+    pollution:4, price:148000, value:0,
+    km:15000, consumption:0, fuelPrice:0, parking:0, maint:0, emergency:150,
+    driverAge:35, yearsLic:12, claimsFree:4, insType:"comprehensive",
+    compRate:3.2, mandBase:1400, tpBase:1600
+  };
+  var state = Object.assign({}, DEF);
+  var lang = LS.get("ccil.lang") || "he";
+  if(!DICT[lang]) lang = "he";
+  var pristine = true;
+  var saved = LS.get("ccil.state");
+  if(saved){ try{ state = Object.assign({}, DEF, JSON.parse(saved)); pristine = false; }catch(e){} }
+
+  var T = function(k){ return (DICT[lang] && DICT[lang][k]) || DICT.he[k] || k; };
+  var fmt0 = function(n){ return new Intl.NumberFormat(DICT[lang]._loc, {maximumFractionDigits:0}).format(Math.round(n||0)); };
+  var money = function(n){ return new Intl.NumberFormat(DICT[lang]._loc, {style:"currency", currency:"ILS", maximumFractionDigits:0}).format(Math.round(n||0)); };
+  var money1 = function(n){ return new Intl.NumberFormat(DICT[lang]._loc, {style:"currency", currency:"ILS", maximumFractionDigits:2}).format(n||0); };
+
+  /* ============================ CALC ENGINE ============================ */
+  var DEP_RATES = [0.15,0.12,0.10,0.09,0.08,0.08,0.07,0.07,0.06,0.06,0.05,0.05,0.05,0.04];
+
+  function num(v, d){ v = parseFloat(v); return isFinite(v) ? v : d; }
+
+  function defaults(fuel){
+    return {
+      consumption: fuel==="electric"?16 : fuel==="hybrid"?4.6 : fuel==="diesel"?5.8 : 7.2,
+      fuelPrice:   fuel==="electric"?0.64 : fuel==="diesel"?7.02 : 7.42,
+      maint:       fuel==="electric"?750 : fuel==="hybrid"?1550 : 1950
+    };
+  }
+
+  function compute(s){
+    var nowY = new Date().getFullYear();
+    var age = Math.max(0, nowY - num(s.year, nowY));
+    var fuel = s.fuel;
+    var d = defaults(fuel);
+    var price = Math.max(0, num(s.price, 0));
+
+    // current value: derived, or user override
+    var est = price;
+    for(var i=0;i<age;i++) est *= (1 - DEP_RATES[Math.min(i, DEP_RATES.length-1)]);
+    est = Math.round(est);
+    var curVal = num(s.value, 0) > 0 ? num(s.value, 0) : est;
+
+    // depreciation over the coming year
+    var depYear = Math.round(curVal * DEP_RATES[Math.min(age, DEP_RATES.length-1)]);
+
+    // licence fee (agrat rishui)
+    var pg = Math.max(0, Math.min(15, num(s.pollution, 10)));
+    var feeBase = fuel==="electric" ? 650
+                : fuel==="hybrid"   ? 900 + pg*120
+                :                     1000 + pg*185;
+    var feeAge = age<3 ? 1 : age<6 ? 0.9 : age<11 ? 0.75 : age<20 ? 0.55 : 0.45;
+    var fees = Math.round(feeBase * feeAge);
+
+    // insurance
+    var dAge = num(s.driverAge, 35), yl = num(s.yearsLic, 10);
+    var cf = Math.max(0, Math.min(9, num(s.claimsFree, 0)));
+    var df = dAge<21 ? 2.2 : dAge<24 ? 1.8 : dAge<27 ? 1.35 : dAge<31 ? 1.12 : dAge<=65 ? 1.0 : dAge<=75 ? 1.15 : 1.4;
+    if(yl<1) df += 0.45; else if(yl<3) df += 0.20; else if(yl<5) df += 0.08;
+    var ncd = Math.min(cf*0.07, 0.45);
+    var mandBase = num(s.mandBase, 1400), tpBase = num(s.tpBase, 1600), compRate = num(s.compRate, 3.2);
+    var mandatory     = Math.round(mandBase * (1 + (df-1)*0.6));
+    var thirdParty    = Math.round(tpBase * df * (1 - ncd*0.5));
+    var comprehensive = Math.round(curVal * compRate/100 * df * (1 - ncd) + tpBase*0.4);
+    var insurance = s.insType==="mandatory"  ? mandatory
+                  : s.insType==="thirdparty" ? mandatory + thirdParty
+                  :                            mandatory + comprehensive;
+
+    // fuel / energy
+    var km = Math.max(0, num(s.km, 15000));
+    var cons = num(s.consumption, 0) || d.consumption;
+    var fp = num(s.fuelPrice, 0) || d.fuelPrice;
+    var fuelCost = Math.round(km/100 * cons * fp);
+
+    // maintenance
+    var maintBase = num(s.maint, 0) || d.maint;
+    var maintenance = Math.round(maintBase * Math.min(1.6, 1 + Math.max(0, age-5)*0.04));
+
+    // misc: tyres, brakes, parking, emergency
+    var tires  = Math.round(km/45000 * 1650);
+    var brakes = Math.round(km/40000 * 1400 * (fuel==="electric"?0.55:1));
+    var parking   = Math.max(0, num(s.parking, 0)) * 12;
+    var emergency = Math.max(0, num(s.emergency, 0)) * 12;
+    var misc = tires + brakes + parking + emergency;
+
+    var cats = { depreciation:depYear, fuel:fuelCost, insurance:insurance, fees:fees, maintenance:maintenance, misc:misc };
+    var year = 0; for(var k in cats) year += cats[k];
+
+    return {
+      age:age, curVal:curVal, est:est, cats:cats, year:year, month:year/12,
+      perKm: km>0 ? year/km : 0,
+      detail:{ tires:tires, brakes:brakes, parking:parking, emergency:emergency,
+               mandatory:mandatory, thirdParty:thirdParty, comprehensive:comprehensive,
+               ncd:ncd, df:df, km:km, young: dAge<24, isNew: yl<3 }
+    };
+  }
+
+  /* ============================ FIELD CONFIG ============================ */
+  var CAT_KEYS = ["depreciation","fuel","insurance","fees","maintenance","misc"];
+  var CAT_VAR  = {depreciation:"--s1", fuel:"--s2", insurance:"--s3", fees:"--s4", maintenance:"--s5", misc:"--s6"};
+
+  function vehicleFields(){
+    return [
+      {k:"manufacturer", t:"f_manufacturer", type:"text"},
+      {k:"model", t:"f_model", type:"text"},
+      {k:"year", t:"f_year", type:"number", min:1990, max:new Date().getFullYear()+1, step:1},
+      {k:"fuel", t:"f_fuel", type:"select", opts:[
+        ["petrol","fuel_petrol"],["diesel","fuel_diesel"],["hybrid","fuel_hybrid"],["electric","fuel_electric"]]},
+      {k:"pollution", t:"f_pollution", type:"number", min:0, max:15, step:1},
+      {k:"price", t:"f_price", type:"number", min:0, step:1000},
+      {k:"value", t:"f_value", type:"number", min:0, step:1000, hint:"f_valueHint", ph:true}
+    ];
+  }
+  function usageFields(){
+    var ev = state.fuel==="electric";
+    return [
+      {k:"km", t:"f_km", type:"number", min:0, step:500},
+      {k:"consumption", t: ev?"f_consEv":"f_consFuel", type:"number", min:0, step:0.1, ph:true},
+      {k:"fuelPrice", t: ev?"f_priceEv":"f_priceFuel", type:"number", min:0, step:0.01, ph:true},
+      {k:"maint", t:"f_maint", type:"number", min:0, step:100, ph:true},
+      {k:"parking", t:"f_parking", type:"number", min:0, step:50},
+      {k:"emergency", t:"f_emergency", type:"number", min:0, step:25}
+    ];
+  }
+  function driverFields(){
+    return [
+      {k:"driverAge", t:"f_driverAge", type:"number", min:16, max:99, step:1},
+      {k:"yearsLic", t:"f_yearsLic", type:"number", min:0, max:80, step:1},
+      {k:"claimsFree", t:"f_claimsFree", type:"number", min:0, max:9, step:1},
+      {k:"insType", t:"f_insType", type:"select", opts:[
+        ["mandatory","ins_mandatory"],["thirdparty","ins_thirdparty"],["comprehensive","ins_comprehensive"]]},
+      {k:"compRate", t:"f_compRate", type:"number", min:0, max:12, step:0.1},
+      {k:"mandBase", t:"f_mandBase", type:"number", min:0, step:50},
+      {k:"tpBase", t:"f_tpBase", type:"number", min:0, step:50}
+    ];
+  }
+
+  function fieldHTML(f){
+    var val = state[f.k];
+    var d = defaults(state.fuel);
+    var ph = "";
+    if(f.ph){
+      if(f.k==="value") ph = String(compute(state).est || "");
+      else if(f.k==="consumption") ph = String(d.consumption);
+      else if(f.k==="fuelPrice") ph = String(d.fuelPrice);
+      else if(f.k==="maint") ph = String(d.maint);
+    }
+    var showVal = (f.ph && (val===0 || val==="0" || val==null)) ? "" : val;
+    var h = '<div class="field"><label for="fld_'+f.k+'">'+T(f.t)+'</label>';
+    if(f.type==="select"){
+      h += '<select id="fld_'+f.k+'" data-k="'+f.k+'">';
+      for(var i=0;i<f.opts.length;i++){
+        var o=f.opts[i];
+        h += '<option value="'+o[0]+'"'+(val===o[0]?" selected":"")+'>'+T(o[1])+'</option>';
+      }
+      h += '</select>';
+    } else {
+      h += '<input id="fld_'+f.k+'" data-k="'+f.k+'" type="'+(f.type==="number"?"number":"text")+'"'
+        + (f.type==="number"?' class="num" inputmode="decimal"':'')
+        + (f.min!=null?' min="'+f.min+'"':'') + (f.max!=null?' max="'+f.max+'"':'')
+        + (f.step!=null?' step="'+f.step+'"':'')
+        + (ph?' placeholder="'+ph+'"':'')
+        + ' value="'+ (showVal==null?"":String(showVal).replace(/"/g,"&quot;")) +'">';
+    }
+    if(f.hint) h += '<span class="hint">'+T(f.hint)+'</span>';
+    h += '</div>';
+    return h;
+  }
+
+  /* ============================ RENDER ============================ */
+  function applyStaticI18n(){
+    document.documentElement.dir = DICT[lang]._dir;
+    document.documentElement.lang = lang;
+    var nodes = document.querySelectorAll("[data-i18n]");
+    for(var i=0;i<nodes.length;i++){ nodes[i].textContent = T(nodes[i].getAttribute("data-i18n")); }
+    document.getElementById("footer").textContent = T("footer");
+    var seg = document.querySelectorAll("#langSeg button");
+    for(var j=0;j<seg.length;j++) seg[j].setAttribute("aria-pressed", String(seg[j].getAttribute("data-lang")===lang));
+    document.title = lang==="he" ? "עלות רכב · מחשבון" : lang==="ru" ? "Стоимость авто · калькулятор" : "Car cost · calculator";
+  }
+
+  function renderForms(){
+    document.getElementById("gridVehicle").innerHTML = vehicleFields().map(fieldHTML).join("");
+    document.getElementById("gridUsage").innerHTML   = usageFields().map(fieldHTML).join("");
+    document.getElementById("gridDriver").innerHTML  = driverFields().map(fieldHTML).join("");
+    var grids = document.querySelectorAll("#gridVehicle, #gridUsage, #gridDriver");
+    for(var g=0; g<grids.length; g++){
+      grids[g].addEventListener("input", onFieldInput);
+      grids[g].addEventListener("change", onFieldInput);
+    }
+  }
+
+  function onFieldInput(e){
+    var el = e.target.closest("[data-k]"); if(!el) return;
+    var k = el.getAttribute("data-k");
+    var v = el.value;
+    if(el.tagName==="INPUT" && el.type==="number") v = v===""?0:parseFloat(v);
+    var fuelChanged = (k==="fuel" && v!==state.fuel);
+    state[k] = v;
+    pristine = false;
+    persist();
+    if(fuelChanged){ renderForms(); }
+    renderResults();
+  }
+
+  function renderResults(){
+    var r = compute(state);
+    var el = document.getElementById("results");
+    var d = r.detail;
+    var tags = [];
+    if(d.young) tags.push(T("driverTagYoung"));
+    else if(d.isNew) tags.push(T("driverTagNew"));
+    else tags.push(T("driverTagVet"));
+    if(d.ncd>0) tags.push(T("ncdTag")+" −"+Math.round(d.ncd*100)+"%");
+
+    var segs = CAT_KEYS.map(function(k){
+      var v = r.cats[k], pct = r.year>0 ? v/r.year*100 : 0;
+      var label = pct>=11 ? '<span>'+Math.round(pct)+'%</span>' : '';
+      return '<div class="seg-b" style="flex-grow:'+Math.max(v,1)+';background:var('+CAT_VAR[k]+')" '
+           + 'title="'+T("cat"+cap(k))+' · '+money(v)+'">'+label+'</div>';
+    }).join("");
+
+    var rows = CAT_KEYS.map(function(k){
+      var v = r.cats[k], pct = r.year>0 ? v/r.year*100 : 0;
+      return '<tr>'
+        + '<td><span class="sw" style="background:var('+CAT_VAR[k]+')"></span>'+T("cat"+cap(k))+'</td>'
+        + '<td class="n">'+money(v/12)+'</td>'
+        + '<td class="n">'+money(v)+'</td>'
+        + '<td style="min-width:110px"><span class="num" style="font-size:11px;color:var(--muted)">'+pct.toFixed(1)+'%</span>'
+        + '<span class="minibar"><i style="width:'+Math.max(pct,1.5)+'%;background:var('+CAT_VAR[k]+')"></i></span></td>'
+        + '</tr>';
+    }).join("");
+
+    var banner = pristine ? '<div class="banner"><span>✳️</span><span>'+T("exampleBanner")+'</span></div>' : '';
+
+    el.innerHTML = banner
+      + '<div class="tiles">'
+        + tile("lead", "tileMonth", money(r.month), "tileMonthSub")
+        + tile("", "tileYear", money(r.year), "tileYearSub")
+        + tile("", "tilePerKm", money1(r.perKm), "tilePerKmSub")
+      + '</div>'
+      + '<div class="chartcard">'
+        + '<h3>'+T("chartTitle")+'</h3>'
+        + '<div class="cap">'+T("chartCap")+' · '+esc(state.manufacturer)+' '+esc(state.model)+' · '
+          + state.year+' · '+T("fuel_"+state.fuel)+' · '+T("f_value")+' ≈ '+money(r.curVal)+'</div>'
+        + '<div class="stack" role="img" aria-label="'+T("chartTitle")+'">'+segs+'</div>'
+        + '<div class="kv" style="margin-top:14px">'+tags.map(function(x){return '<span>'+x+'</span>';}).join("")+'</div>'
+        + '<table class="bd"><thead><tr>'
+          + '<th>'+T("thCat")+'</th><th style="text-align:end">'+T("thMonth")+'</th>'
+          + '<th style="text-align:end">'+T("thYear")+'</th><th>'+T("thShare")+'</th></tr></thead>'
+        + '<tbody>'+rows
+          + '<tr class="total"><td>'+T("totalRow")+'</td><td class="n">'+money(r.month)+'</td>'
+          + '<td class="n">'+money(r.year)+'</td><td class="num" style="font-size:11px;color:var(--muted)">100%</td></tr>'
+        + '</tbody></table>'
+      + '</div>';
+  }
+
+  function tile(cls, tkey, big, subkey){
+    return '<div class="tile '+cls+'"><div class="tt">'+T(tkey)+'</div>'
+      + '<div class="big">'+big+'</div><div class="sub">'+T(subkey)+'</div></div>';
+  }
+  function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+
+  function setStatus(kind, key){
+    var s = document.getElementById("status");
+    s.className = "status " + kind;
+    document.getElementById("statusText").textContent = T(key);
+  }
+
+  function persist(){ LS.set("ccil.state", JSON.stringify(state)); LS.set("ccil.lang", lang); }
+
+  /* ============================ VEHICLE LOOKUP ============================ */
+  var CKAN = "https://data.gov.il/api/3/action/datastore_search";
+  var RES_ACTIVE = "053cea08-09bc-40ec-8f7a-156f0677aff3"; // private & commercial vehicles
+
+  function normPlate(v){ return String(v||"").replace(/\D/g,""); }
+
+  function mapFuel(he){
+    he = String(he||"");
+    if(/חשמל/.test(he)) return "electric";
+    if(/היבר/.test(he)) return "hybrid";
+    if(/דיזל|סולר/.test(he)) return "diesel";
+    return "petrol";
+  }
+  function estPrice(year){
+    var age = Math.max(0, new Date().getFullYear() - (year||new Date().getFullYear()));
+    var v = 165000;
+    for(var i=0;i<age;i++) v *= (1 - DEP_RATES[Math.min(i, DEP_RATES.length-1)]);
+    // round to nearest 1000, floor 12000
+    return Math.max(12000, Math.round(v/1000)*1000);
+  }
+
+  // deterministic pseudo-random demo generator from the digits
+  var DEMO_MAKES = [
+    ["Toyota","Corolla","hybrid"],["Hyundai","i20","petrol"],["Kia","Sportage","petrol"],
+    ["Mazda","3","petrol"],["Skoda","Octavia","petrol"],["Tesla","Model 3","electric"],
+    ["Nissan","Qashqai","petrol"],["Volkswagen","Golf","petrol"],["Toyota","Yaris","hybrid"],
+    ["Hyundai","Ioniq 5","electric"],["Kia","Niro","hybrid"],["Suzuki","Swift","petrol"],
+    ["Renault","Clio","petrol"],["Seat","Ibiza","petrol"],["BYD","Atto 3","electric"],
+    ["Mitsubishi","Outlander","hybrid"]
+  ];
+  function demoFrom(plate){
+    var h = 0; for(var i=0;i<plate.length;i++) h = (h*31 + plate.charCodeAt(i)) >>> 0;
+    var mk = DEMO_MAKES[h % DEMO_MAKES.length];
+    var year = 2014 + (Math.floor(h/7) % 12); // 2014..2025
+    var pol = mk[2]==="electric" ? 1 : mk[2]==="hybrid" ? (2 + h%4) : (5 + h%9);
+    return { manufacturer:mk[0], model:mk[1], year:year, fuel:mk[2],
+             pollution:pol, price:estPrice(year), value:0 };
+  }
+
+  function applyVehicle(v){
+    ["manufacturer","model","year","fuel","pollution","price","value"].forEach(function(k){
+      if(v[k]!=null) state[k] = v[k];
+    });
+    // reset derived usage defaults so placeholders track the new fuel
+    state.consumption = 0; state.fuelPrice = 0; state.maint = 0;
+    pristine = false; persist(); renderForms(); renderResults();
+    document.getElementById("pVehicle").open = true;
+  }
+
+  function lookup(){
+    var plate = normPlate(document.getElementById("plate").value);
+    if(plate.length < 7 || plate.length > 8){ setStatus("warn","statusShort"); return; }
+    var btn = document.getElementById("lookupBtn");
+    btn.disabled = true; setStatus("info","statusLoading");
+
+    var url = CKAN + "?resource_id=" + RES_ACTIVE + "&q=" + encodeURIComponent(plate) + "&limit=5";
+    var done = false;
+    var to = setTimeout(function(){ if(!done){ done=true; btn.disabled=false; applyVehicle(demoFrom(plate)); setStatus("warn","statusOffline"); } }, 9000);
+
+    fetch(url, {mode:"cors"})
+      .then(function(res){ return res.json(); })
+      .then(function(j){
+        if(done) return; done=true; clearTimeout(to); btn.disabled=false;
+        var recs = j && j.result && j.result.records;
+        var rec = null;
+        if(recs && recs.length){
+          for(var i=0;i<recs.length;i++){ if(normPlate(recs[i].mispar_rechev)===plate){ rec = recs[i]; break; } }
+          rec = rec || recs[0];
+        }
+        if(rec){
+          var year = parseInt(rec.shnat_yatzur,10) || new Date().getFullYear();
+          var fuel = mapFuel(rec.sug_delek_nm);
+          var maker = String(rec.tozeret_nm||"").replace(/\s+\S*$/,"").trim() || rec.tozeret_nm || state.manufacturer;
+          applyVehicle({
+            manufacturer: maker,
+            model: (rec.kinuy_mishari || rec.degem_nm || state.model || "").trim(),
+            year: year,
+            fuel: fuel,
+            pollution: (rec.kvutzat_zihum!=null && rec.kvutzat_zihum!=="") ? parseInt(rec.kvutzat_zihum,10) : (fuel==="electric"?1:8),
+            price: estPrice(year),
+            value: 0
+          });
+          setStatus("ok","statusFound");
+        } else {
+          applyVehicle(demoFrom(plate));
+          setStatus("warn","statusDemo");
+        }
+      })
+      .catch(function(){
+        if(done) return; done=true; clearTimeout(to); btn.disabled=false;
+        applyVehicle(demoFrom(plate));
+        setStatus("warn","statusOffline");
+      });
+  }
+
+  /* ============================ ENCRYPTION (AES-256-GCM) ============================ */
+  var enc = new TextEncoder(), dec = new TextDecoder();
+  function b64(buf){ var b=new Uint8Array(buf), s=""; for(var i=0;i<b.length;i++) s+=String.fromCharCode(b[i]); return btoa(s); }
+  function unb64(str){ var s=atob(str), b=new Uint8Array(s.length); for(var i=0;i<s.length;i++) b[i]=s.charCodeAt(i); return b; }
+
+  function deriveKey(pass, salt){
+    return crypto.subtle.importKey("raw", enc.encode(pass), {name:"PBKDF2"}, false, ["deriveKey"])
+      .then(function(base){
+        return crypto.subtle.deriveKey(
+          {name:"PBKDF2", salt:salt, iterations:250000, hash:"SHA-256"},
+          base, {name:"AES-GCM", length:256}, false, ["encrypt","decrypt"]);
+      });
+  }
+
+  function encryptState(pass){
+    var salt = crypto.getRandomValues(new Uint8Array(16));
+    var iv = crypto.getRandomValues(new Uint8Array(12));
+    var payload = JSON.stringify({ state:state, lang:lang, savedAt:new Date().toISOString() });
+    return deriveKey(pass, salt).then(function(key){
+      return crypto.subtle.encrypt({name:"AES-GCM", iv:iv}, key, enc.encode(payload));
+    }).then(function(ct){
+      return {
+        app:"car-cost-il", v:1, alg:"AES-256-GCM", kdf:"PBKDF2-SHA256", iter:250000,
+        salt:b64(salt), iv:b64(iv), ct:b64(ct), ts:new Date().toISOString()
+      };
+    });
+  }
+
+  function decryptEnvelope(pass, env){
+    if(!env || env.alg!=="AES-256-GCM") return Promise.reject(new Error("bad envelope"));
+    var salt = unb64(env.salt), iv = unb64(env.iv), ct = unb64(env.ct);
+    return deriveKey(pass, salt).then(function(key){
+      return crypto.subtle.decrypt({name:"AES-GCM", iv:iv}, key, ct);
+    }).then(function(pt){
+      return JSON.parse(dec.decode(pt));
+    });
+  }
+
+  function toast(kind, key){
+    var s = document.getElementById("status");
+    s.className = "status " + kind;
+    document.getElementById("statusText").textContent = T(key);
+    try{ document.querySelector("#status").scrollIntoView({block:"center", behavior:"smooth"}); }catch(e){}
+  }
+
+  // Optional Artifact runtime download bridge; falls back to a Blob link when self-hosted.
+  var downloadsCap = null;
+  try{ if(window.claude && typeof claude.use==="function"){
+    claude.use("downloads").then(function(d){ downloadsCap = d; }, function(){});
+  }}catch(e){}
+
+  function wireCrypto(){
+    var out = document.getElementById("encOut");
+    var meta = document.getElementById("encMeta");
+
+    document.getElementById("encBtn").addEventListener("click", function(){
+      var p = document.getElementById("pass").value || "";
+      if(p.length < 6){ toast("warn","needPass"); return; }
+      encryptState(p).then(function(env){
+        out.value = JSON.stringify(env, null, 2);
+        meta.innerHTML = '<span>'+env.alg+'</span><span>'+env.kdf+'</span><span>'+fmt0(env.iter)+' it</span><span>'+env.ts.slice(0,16).replace("T"," ")+'</span>';
+        toast("ok","encOk");
+      });
+    });
+
+    document.getElementById("copyBtn").addEventListener("click", function(){
+      if(!out.value) return;
+      (navigator.clipboard ? navigator.clipboard.writeText(out.value) : Promise.reject())
+        .then(function(){ toast("ok","copyOk"); })
+        .catch(function(){ out.select(); try{document.execCommand("copy"); toast("ok","copyOk");}catch(e){} });
+    });
+
+    document.getElementById("dlBtn").addEventListener("click", function(){
+      if(!out.value) return;
+      var fn = "car-cost-" + new Date().toISOString().slice(0,10) + ".carcost.json";
+      if(downloadsCap && typeof downloadsCap.save==="function"){
+        downloadsCap.save({filename:fn, data:out.value}).then(function(){ toast("ok","encOk"); }, function(){});
+        return;
+      }
+      try{
+        var blob = new Blob([out.value], {type:"application/json"});
+        var a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = fn;
+        document.body.appendChild(a); a.click();
+        setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+      }catch(e){ toast("warn","copyOk"); }
+    });
+
+    function loadEnvelope(text){
+      var p = document.getElementById("pass").value || "";
+      if(p.length < 6){ toast("warn","needPass"); return; }
+      var env; try{ env = JSON.parse(text); }catch(e){ toast("err","decErr"); return; }
+      decryptEnvelope(p, env).then(function(obj){
+        if(obj && obj.state){
+          state = Object.assign({}, DEF, obj.state);
+          if(obj.lang && DICT[obj.lang]) lang = obj.lang;
+          pristine = false; persist();
+          applyStaticI18n(); renderForms(); renderResults();
+          document.getElementById("plate").placeholder = lang==="he" ? "12-345-67" : "12-345-67";
+          toast("ok","decOk");
+        } else { toast("err","decErr"); }
+      }).catch(function(){ toast("err","decErr"); });
+    }
+
+    document.getElementById("decBtn").addEventListener("click", function(){ loadEnvelope(out.value); });
+    document.getElementById("fileIn").addEventListener("change", function(e){
+      var f = e.target.files && e.target.files[0]; if(!f) return;
+      var rd = new FileReader();
+      rd.onload = function(){ out.value = String(rd.result); loadEnvelope(out.value); };
+      rd.readAsText(f);
+    });
+    document.getElementById("clearBtn").addEventListener("click", function(){
+      LS.del("ccil.state"); state = Object.assign({}, DEF); pristine = true;
+      persist(); renderForms(); renderResults(); toast("info","cleared");
+    });
+  }
+
+  /* ============================ THEME + LANG ============================ */
+  function initTheme(){
+    var saved = LS.get("ccil.theme");
+    if(saved==="dark" || saved==="light") document.documentElement.setAttribute("data-theme", saved);
+    updateThemeBtn();
+  }
+  function updateThemeBtn(){
+    var cur = document.documentElement.getAttribute("data-theme");
+    var dark = cur ? cur==="dark"
+      : (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    document.getElementById("themeBtn").textContent = dark ? "☀" : "☾";
+  }
+  document.getElementById("themeBtn").addEventListener("click", function(){
+    var cur = document.documentElement.getAttribute("data-theme");
+    var dark = cur ? cur==="dark"
+      : (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    var next = dark ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    LS.set("ccil.theme", next);
+    updateThemeBtn();
+  });
+
+  document.getElementById("langSeg").addEventListener("click", function(e){
+    var b = e.target.closest("button[data-lang]"); if(!b) return;
+    lang = b.getAttribute("data-lang"); persist();
+    applyStaticI18n(); renderForms(); renderResults();
+  });
+
+  document.getElementById("lookupBtn").addEventListener("click", lookup);
+  document.getElementById("plate").addEventListener("keydown", function(e){ if(e.key==="Enter") lookup(); });
+  document.getElementById("plate").addEventListener("input", function(e){
+    var v = normPlate(e.target.value);
+    if(v.length===8) e.target.value = v.replace(/(\d{2})(\d{3})(\d{3})/, "$1-$2-$3");
+    else if(v.length===7) e.target.value = v.replace(/(\d{3})(\d{2})(\d{2})/, "$1-$2-$3");
+    else e.target.value = v;
+  });
+
+  /* ============================ BOOT ============================ */
+  initTheme();
+  applyStaticI18n();
+  renderForms();
+  renderResults();
+  wireCrypto();
+})();
+</script>
