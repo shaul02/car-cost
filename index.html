@@ -298,7 +298,15 @@
     <div class="tt" data-i18n="inputsKicker" style="margin-bottom:6px">כוונון הנתונים</div>
     <details class="panel" id="pVehicle" open>
       <summary><span class="ic">🚗</span><span data-i18n="secVehicle">מפרט הרכב</span><span class="chev">›</span></summary>
-      <div class="pbody"><div class="grid" id="gridVehicle"></div></div>
+      <div class="pbody">
+        <div class="grid" id="gridVehicle"></div>
+        <div class="infobox">
+          <span data-i18n="priceRealNote">המחיר והשווי כאן הם אומדן גס בלבד. לבדיקת מחיר משוקלל אמיתי לפי יצרן, דגם, שנה ורמת גימור — מבוסס על דיווחי מכירה בפועל — יש את מחירון העם של משרד התחבורה (חינמי, ללא התחברות):</span>
+          <div class="links">
+            <a class="btn secondary" href="https://carlistprice.mot.gov.il" target="_blank" rel="noopener" data-i18n="priceRealBtn">מחירון העם — משרד התחבורה ↗</a>
+          </div>
+        </div>
+      </div>
     </details>
     <details class="panel" id="pUsage">
       <summary><span class="ic">⛽</span><span data-i18n="secUsage">שימוש ועלויות שוטפות</span><span class="chev">›</span></summary>
@@ -433,6 +441,10 @@
       needPass:"הזן סיסמה באורך 6 תווים לפחות", encOk:"הוצפן — העתק את הטקסט או הורד את הקובץ",
       copyOk:"הועתק ללוח", decOk:"פוענח ונטען בהצלחה", decErr:"פענוח נכשל — סיסמה שגויה או קובץ פגום",
       cleared:"השמירה המקומית נמחקה",
+      priceRealNote:"המחיר והשווי כאן הם אומדן גס בלבד. לבדיקת מחיר משוקלל אמיתי לפי יצרן, דגם, שנה ורמת גימור — מבוסס על דיווחי מכירה בפועל — יש את מחירון העם של משרד התחבורה (חינמי, ללא התחברות):",
+      priceRealBtn:"מחירון העם — משרד התחבורה ↗",
+      clearConfirm:"לנקות את כל הנתונים השמורים ואת מה שאתה עורך כרגע? הפעולה לא הפיכה.",
+      calibratedNote:"ההנחות המספריות (מחירי דלק, נוסחת אגרה, שיעורי ירידת ערך וכו') כוילו לאחרונה בספטמבר 2026 ועשויות להזדקק לעדכון עם הזמן.",
       footer:"אומדן להמחשה בלבד — לא תחליף להצעת ביטוח, שמאות או נתוני יצרן רשמיים. מקור מפרט הרכב: מאגר משרד התחבורה ב‑data.gov.il. חישובים ומחירים מתעדכנים ידנית ועשויים לסטות מהמציאות. אין באמור ייעוץ פיננסי."
     },
     en:{
@@ -492,6 +504,10 @@
       needPass:"Enter a passphrase of at least 6 characters", encOk:"Encrypted — copy the text or download the file",
       copyOk:"Copied to clipboard", decOk:"Decrypted and loaded", decErr:"Decryption failed — wrong passphrase or corrupt file",
       cleared:"Local save cleared",
+      priceRealNote:"The price/value here is a rough estimate. To check a real weighted price by manufacturer, model, year and trim — based on actual reported sales — there's the Ministry of Transport's public price list (free, no login):",
+      priceRealBtn:"The People's Price List — Ministry of Transport ↗",
+      clearConfirm:"Clear all saved data and what you're currently editing? This can't be undone.",
+      calibratedNote:"The numeric assumptions (fuel prices, licence-fee formula, depreciation rates, etc.) were last calibrated in September 2026 and may need updating over time.",
       footer:"Illustrative estimate only — not a substitute for an insurance quote, appraisal or official manufacturer data. Vehicle spec source: Israeli Ministry of Transport registry on data.gov.il. Rates and prices are maintained manually and may drift from reality. Nothing here is financial advice."
     },
     ru:{
@@ -551,6 +567,10 @@
       needPass:"Введите фразу не короче 6 символов", encOk:"Зашифровано — скопируйте текст или скачайте файл",
       copyOk:"Скопировано", decOk:"Расшифровано и загружено", decErr:"Ошибка расшифровки — неверная фраза или повреждённый файл",
       cleared:"Локальное сохранение очищено",
+      priceRealNote:"Цена и стоимость здесь — лишь грубая оценка. Чтобы проверить реальную средневзвешенную цену по производителю, модели, году и комплектации — на основе реальных сделок — есть публичный прайс-лист Министерства транспорта (бесплатно, без входа):",
+      priceRealBtn:"Народный прайс-лист — Министерство транспорта ↗",
+      clearConfirm:"Очистить все сохранённые данные и то, что вы сейчас редактируете? Это необратимо.",
+      calibratedNote:"Числовые допущения (цены на топливо, формула госпошлины, ставки амортизации и т.д.) в последний раз откалиброваны в сентябре 2026 года и могут нуждаться в обновлении со временем.",
       footer:"Ориентировочная оценка — не заменяет страховое предложение, оценку эксперта или официальные данные производителя. Источник характеристик: реестр Министерства транспорта Израиля на data.gov.il. Ставки и цены обновляются вручную и могут отличаться от реальных. Это не финансовая консультация."
     }
   };
@@ -570,6 +590,7 @@
   var pristine = true;
   var compareSnap = null; // {vu:{...vehicle+usage fields...}, ts}
   var projOpen = false; // whether the collapsible 5-year projection panel is expanded
+  var compareOpen = false; // whether the collapsible comparison panel is expanded
   var saved = LS.get("ccil.state");
   if(saved){ try{ state = Object.assign({}, DEF, JSON.parse(saved)); pristine = false; }catch(e){} }
   var savedCmp = LS.get("ccil.compareSnap");
@@ -749,7 +770,7 @@
       {k:"fuel", t:"f_fuel", type:"select", opts:[
         ["petrol","fuel_petrol"],["diesel","fuel_diesel"],["hybrid","fuel_hybrid"],["electric","fuel_electric"]]},
       {k:"pollution", t:"f_pollution", type:"number", min:0, max:15, step:1},
-      {k:"price", t:"f_price", type:"number", min:0, step:1000},
+      {k:"price", t:"f_price", type:"number", min:0, step:1000, slider:{min:20000,max:400000,step:5000}},
       {k:"value", t:"f_value", type:"number", min:0, step:1000, hint:"f_valueHint", ph:true},
       {k:"financed", t:"f_financed", type:"checkbox"}
     ];
@@ -763,7 +784,7 @@
   function usageFields(){
     var ev = state.fuel==="electric";
     return [
-      {k:"km", t:"f_km", type:"number", min:0, step:500},
+      {k:"km", t:"f_km", type:"number", min:0, step:500, slider:{min:0,max:60000,step:500}},
       {k:"consumption", t: ev?"f_consEv":"f_consFuel", type:"number", min:0, step:0.1, ph:true},
       {k:"fuelPrice", t: ev?"f_priceEv":"f_priceFuel", type:"number", min:0, step:0.01, ph:true},
       {k:"maint", t:"f_maint", type:"number", min:0, step:100, ph:true},
@@ -821,6 +842,11 @@
         + (ph?' placeholder="'+ph+'"':'')
         + ' value="'+ (showVal==null?"":String(showVal).replace(/"/g,"&quot;")) +'">';
     }
+    if(f.slider){
+      var sv = num(val, f.slider.min);
+      h += '<input type="range" data-k="'+f.k+'" min="'+f.slider.min+'" max="'+f.slider.max+'" step="'+f.slider.step+'"'
+        + ' value="'+sv+'" style="width:100%;margin-top:7px;accent-color:var(--accent)" aria-label="'+T(f.t)+'">';
+    }
     if(f.hint) h += '<span class="hint">'+T(f.hint)+'</span>';
     h += '</div>';
     return h;
@@ -832,7 +858,7 @@
     document.documentElement.lang = lang;
     var nodes = document.querySelectorAll("[data-i18n]");
     for(var i=0;i<nodes.length;i++){ nodes[i].textContent = T(nodes[i].getAttribute("data-i18n")); }
-    document.getElementById("footer").textContent = T("footer");
+    document.getElementById("footer").textContent = T("footer") + " " + T("calibratedNote");
     var seg = document.querySelectorAll("#langSeg button");
     for(var j=0;j<seg.length;j++) seg[j].setAttribute("aria-pressed", String(seg[j].getAttribute("data-lang")===lang));
     document.title = lang==="he" ? "עלות רכב · מחשבון" : lang==="ru" ? "Стоимость авто · калькулятор" : "Car cost · calculator";
@@ -858,7 +884,19 @@
     for(var g=0; g<grids.length; g++){
       grids[g].addEventListener("input", onFieldInput);
       grids[g].addEventListener("change", onFieldInput);
+      grids[g].addEventListener("input", mirrorSlider);
     }
+  }
+
+  // Keeps a field's number input and its paired <input type=range> in sync
+  // without a full form rebuild (so dragging the slider stays smooth).
+  function mirrorSlider(e){
+    var el = e.target, k = el.getAttribute && el.getAttribute("data-k");
+    if(!k || el.type!=="range" && el.type!=="number") return;
+    var other = el.type==="range"
+      ? document.getElementById("fld_"+k)
+      : document.querySelector('input[type="range"][data-k="'+k+'"]');
+    if(other) other.value = el.value;
   }
 
   function onFieldInput(e){
@@ -866,8 +904,9 @@
     var k = el.getAttribute("data-k");
     var v;
     if(el.type==="checkbox") v = el.checked;
-    else { v = el.value; if(el.tagName==="INPUT" && el.type==="number") v = v===""?0:parseFloat(v); }
-    var rebuildForms = (k==="fuel" && v!==state.fuel) || k==="financed";
+    else { v = el.value; if(el.tagName==="INPUT" && (el.type==="number"||el.type==="range")) v = v===""?0:parseFloat(v); }
+    var rebuildForms = (k==="fuel" && v!==state.fuel) || k==="financed" || k==="recentClaim";
+    if(k==="recentClaim" && v===true) state.claimsFree = 0;
     state[k] = v;
     pristine = false;
     persist();
@@ -966,6 +1005,8 @@
 
     var projEl = document.getElementById("pProjection");
     if(projEl) projEl.addEventListener("toggle", function(){ projOpen = projEl.open; });
+    var cmpEl = document.getElementById("pCompareCard");
+    if(cmpEl) cmpEl.addEventListener("toggle", function(){ compareOpen = cmpEl.open; });
   }
 
   function projectionCardHTML(){
@@ -997,24 +1038,26 @@
       : diff < 0
         ? esc(state.manufacturer)+' '+esc(state.model)+' '+T("compareCheaperBy")+' '+money(Math.abs(diff))+'/'+T("perMonthShort")
         : esc(compareSnap.vu.manufacturer)+' '+esc(compareSnap.vu.model)+' '+T("compareCheaperBy")+' '+money(Math.abs(diff))+'/'+T("perMonthShort");
-    return '<div class="chartcard">'
-      + '<div class="head"><h3>'+T("compareTitle")+'</h3>'
-        + '<div style="display:flex;gap:10px;flex-wrap:wrap">'
+    return '<details class="panel" id="pCompareCard"'+(compareOpen?' open':'')+'>'
+      + '<summary><span class="ic">⚖️</span><span>'+T("compareTitle")+'</span><span class="chev">›</span></summary>'
+      + '<div class="pbody" style="padding-top:16px">'
+        + '<div class="rowbtns" style="margin-top:0;justify-content:flex-end">'
           + '<button class="btn secondary" id="compareSwapBtn" type="button" style="min-height:34px;padding:0 14px;font-size:12.5px">🔁&nbsp;'+T("compareSwap")+'</button>'
           + '<button class="btn secondary" id="compareClearBtn" type="button" style="min-height:34px;padding:0 14px;font-size:12.5px">✕&nbsp;'+T("compareClear")+'</button>'
-        + '</div></div>'
-      + '<div class="compareGrid">'
-        + '<div class="cveh"><div class="cvehName">'+esc(state.manufacturer)+' '+esc(state.model)+' · '+state.year+'</div>'
-          + '<div class="cvehTiles"><div><span class="lbl">'+T("tileMonth")+'</span><span class="val">'+money(r.month)+'</span></div>'
-          + '<div><span class="lbl">'+T("tileYear")+'</span><span class="val">'+money(r.year)+'</span></div></div>'
-          + '<div class="stack mini">'+miniStack(catKeysA, r)+'</div></div>'
-        + '<div class="cveh"><div class="cvehName">'+esc(compareSnap.vu.manufacturer)+' '+esc(compareSnap.vu.model)+' · '+compareSnap.vu.year+'</div>'
-          + '<div class="cvehTiles"><div><span class="lbl">'+T("tileMonth")+'</span><span class="val">'+money(rB.month)+'</span></div>'
-          + '<div><span class="lbl">'+T("tileYear")+'</span><span class="val">'+money(rB.year)+'</span></div></div>'
-          + '<div class="stack mini">'+miniStack(catKeysB, rB)+'</div></div>'
+        + '</div>'
+        + '<div class="compareGrid">'
+          + '<div class="cveh"><div class="cvehName">'+esc(state.manufacturer)+' '+esc(state.model)+' · '+state.year+'</div>'
+            + '<div class="cvehTiles"><div><span class="lbl">'+T("tileMonth")+'</span><span class="val">'+money(r.month)+'</span></div>'
+            + '<div><span class="lbl">'+T("tileYear")+'</span><span class="val">'+money(r.year)+'</span></div></div>'
+            + '<div class="stack mini">'+miniStack(catKeysA, r)+'</div></div>'
+          + '<div class="cveh"><div class="cvehName">'+esc(compareSnap.vu.manufacturer)+' '+esc(compareSnap.vu.model)+' · '+compareSnap.vu.year+'</div>'
+            + '<div class="cvehTiles"><div><span class="lbl">'+T("tileMonth")+'</span><span class="val">'+money(rB.month)+'</span></div>'
+            + '<div><span class="lbl">'+T("tileYear")+'</span><span class="val">'+money(rB.year)+'</span></div></div>'
+            + '<div class="stack mini">'+miniStack(catKeysB, rB)+'</div></div>'
+        + '</div>'
+        + '<div class="compareWinner">'+winner+'</div>'
       + '</div>'
-      + '<div class="compareWinner">'+winner+'</div>'
-      + '</div>';
+      + '</details>';
   }
 
   function tile(cls, tkey, big, subkey){
@@ -1062,6 +1105,37 @@
         + '<td class="n">'+pct.toFixed(1)+'%</td></tr>';
     }).join("");
 
+    var pts = projectYears(5);
+    var projRows = pts.map(function(p){
+      return '<tr><td>'+p.calYear+'</td><td class="n">'+money(p.month)+'</td><td class="n">'+money(p.total)+'</td></tr>';
+    }).join("");
+
+    var compareHTML = "";
+    if(compareSnap && compareSnap.vu){
+      var mergedB = Object.assign({}, state, compareSnap.vu, {includeDepreciation: state.includeDepreciation});
+      var rB = compute(mergedB), dB = rB.detail;
+      var catKeysB = relevantCatKeys(dB, mergedB);
+      var allKeys = catKeys.slice();
+      catKeysB.forEach(function(k){ if(allKeys.indexOf(k)<0) allKeys.push(k); });
+      var cmpRows = allKeys.map(function(k){
+        return '<tr><td><span class="sw" style="background:var('+CAT_VAR[k]+')"></span>'+T("cat"+cap(k))+'</td>'
+          + '<td class="n">'+money(r.cats[k]||0)+'</td><td class="n">'+money(rB.cats[k]||0)+'</td></tr>';
+      }).join("");
+      var diff = r.month - rB.month;
+      var winner = Math.abs(diff) < 1 ? T("compareTie")
+        : diff < 0
+          ? esc(state.manufacturer)+' '+esc(state.model)+' '+T("compareCheaperBy")+' '+money(Math.abs(diff))+'/'+T("perMonthShort")
+          : esc(compareSnap.vu.manufacturer)+' '+esc(compareSnap.vu.model)+' '+T("compareCheaperBy")+' '+money(Math.abs(diff))+'/'+T("perMonthShort");
+      compareHTML = '<h2>'+T("compareTitle")+'</h2>'
+        + '<table><thead><tr><th>'+T("thCat")+'</th>'
+          + '<th style="text-align:end">'+esc(state.manufacturer)+' '+esc(state.model)+'</th>'
+          + '<th style="text-align:end">'+esc(compareSnap.vu.manufacturer)+' '+esc(compareSnap.vu.model)+'</th></tr></thead>'
+        + '<tbody>'+cmpRows
+          + '<tr class="total"><td>'+T("totalRow")+'</td><td class="n">'+money(r.year)+'</td><td class="n">'+money(rB.year)+'</td></tr>'
+        + '</tbody></table>'
+        + '<div class="meta" style="margin:8px 0 0">'+winner+'</div>';
+    }
+
     document.getElementById("printSheet").innerHTML =
         '<h1>'+T("appTitle")+'</h1>'
       + '<div class="meta">'+esc(state.manufacturer)+' '+esc(state.model)+' · '+state.year+' · '+T("printedOn")+' '+stamp+'</div>'
@@ -1079,6 +1153,10 @@
         + '<tr class="total"><td>'+T("totalRow")+'</td><td class="n">'+money(r.month)+'</td>'
         + '<td class="n">'+money(r.year)+'</td><td class="n">100%</td></tr>'
       + '</tbody></table>'
+      + '<h2>'+T("projTitle")+'</h2>'
+      + '<table><thead><tr><th>'+T("f_year")+'</th><th style="text-align:end">'+T("thMonth")+'</th>'
+        + '<th style="text-align:end">'+T("thYear")+'</th></tr></thead><tbody>'+projRows+'</tbody></table>'
+      + compareHTML
       + '<div class="foot">'+T("footer")+'</div>';
   }
 
@@ -1103,9 +1181,24 @@
     if(/דיזל|סולר/.test(he)) return "diesel";
     return "petrol";
   }
-  function estPrice(year){
+  // Rough manufacturer tiers so the guessed new-car price at least separates a
+  // Dacia from a BMW — not a real price list (see the honest link in the UI).
+  var PRICE_TIERS = [
+    [2.1, ["porsche","ferrari","lamborghini","bentley","aston","maserati","rolls"]],
+    [1.55, ["bmw","mercedes","audi","volvo","tesla","cadillac","lincoln","infiniti","lexus","jaguar","land rover","range rover"]],
+    [0.72, ["dacia","chery","great wall","haval","mg","daihatsu","daewoo","ssangyong","lada","jac","geely","byd","maruti"]]
+  ];
+  function priceTier(name){
+    var n = String(name||"").toLowerCase();
+    for(var i=0;i<PRICE_TIERS.length;i++){
+      var list = PRICE_TIERS[i][1];
+      for(var j=0;j<list.length;j++){ if(n.indexOf(list[j])>=0) return PRICE_TIERS[i][0]; }
+    }
+    return 1.0;
+  }
+  function estPrice(year, manufacturer){
     var age = Math.max(0, new Date().getFullYear() - (year||new Date().getFullYear()));
-    var v = 165000;
+    var v = 158000 * priceTier(manufacturer);
     for(var i=0;i<age;i++) v *= (1 - DEP_RATES[Math.min(i, DEP_RATES.length-1)]);
     // round to nearest 1000, floor 12000
     return Math.max(12000, Math.round(v/1000)*1000);
@@ -1126,7 +1219,7 @@
     var year = 2014 + (Math.floor(h/7) % 12); // 2014..2025
     var pol = mk[2]==="electric" ? 1 : mk[2]==="hybrid" ? (2 + h%4) : (5 + h%9);
     return { manufacturer:mk[0], model:mk[1], year:year, fuel:mk[2],
-             pollution:pol, price:estPrice(year), value:0 };
+             pollution:pol, price:estPrice(year, mk[0]), value:0 };
   }
 
   function applyVehicle(v){
@@ -1169,7 +1262,7 @@
             year: year,
             fuel: fuel,
             pollution: (rec.kvutzat_zihum!=null && rec.kvutzat_zihum!=="") ? parseInt(rec.kvutzat_zihum,10) : (fuel==="electric"?1:8),
-            price: estPrice(year),
+            price: estPrice(year, maker),
             value: 0
           });
           setStatus("ok","statusFound");
@@ -1298,7 +1391,9 @@
       rd.readAsText(f);
     });
     document.getElementById("clearBtn").addEventListener("click", function(){
-      LS.del("ccil.state"); state = Object.assign({}, DEF); pristine = true;
+      if(!confirm(T("clearConfirm"))) return;
+      LS.del("ccil.state"); LS.del("ccil.compareSnap");
+      state = Object.assign({}, DEF); compareSnap = null; pristine = true;
       persist(); renderForms(); renderResults(); toast("info","cleared");
     });
 
