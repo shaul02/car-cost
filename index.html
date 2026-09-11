@@ -176,6 +176,10 @@
   .field input:focus, .field select:focus{background:var(--surface)}
   .field input.num{font-family:var(--mono)}
   .rowbtns{display:flex; gap:10px; flex-wrap:wrap; margin-top:16px}
+  .infobox{margin-top:18px; padding:13px 15px; border:1px solid var(--line); border-radius:10px;
+    background:var(--surface-2); font-size:12.5px; color:var(--ink-2); line-height:1.6}
+  .infobox .links{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
+  .infobox a.btn{text-decoration:none; min-height:38px; padding:0 14px; font-size:12.5px}
 
   .enc-out{width:100%; min-height:104px; border:1px solid var(--line); background:var(--surface-2);
     border-radius:10px; padding:10px 12px; font-family:var(--mono); font-size:11.5px; color:var(--ink-2);
@@ -238,7 +242,16 @@
     </details>
     <details class="panel" id="pDriver">
       <summary><span class="ic">🪪</span><span data-i18n="secDriver">פרופיל נהג וביטוח</span><span class="chev">›</span></summary>
-      <div class="pbody"><div class="grid" id="gridDriver"></div></div>
+      <div class="pbody">
+        <div class="grid" id="gridDriver"></div>
+        <div class="infobox">
+          <span data-i18n="insRealNote">כל מספרי הביטוח כאן הם אומדן גס בלבד — אין מאגר ציבורי בישראל עם הצעות מחיר אמיתיות. לבדיקת מחירים אמיתיים מול חברות הביטוח, השתמש במחשבון הרשמי של רשות שוק ההון, ביטוח וחיסכון:</span>
+          <div class="links">
+            <a class="btn secondary" href="https://car.cma.gov.il" target="_blank" rel="noopener" data-i18n="insRealBtn">מחשבון ביטוח חובה רשמי (CMA) ↗</a>
+            <a class="btn secondary" href="https://harb.cma.gov.il" target="_blank" rel="noopener" data-i18n="insRealBtn2">הר הביטוח — כל הפוליסות שלך ↗</a>
+          </div>
+        </div>
+      </div>
     </details>
     <details class="panel" id="pSec">
       <summary><span class="ic">🔒</span><span data-i18n="secCrypto">שמירה מוצפנת (AES‑256‑GCM)</span><span class="chev">›</span></summary>
@@ -317,8 +330,12 @@
       f_priceFuel:"מחיר דלק (₪ לליטר)", f_priceEv:"מחיר חשמל (₪ לקוט\"ש)",
       f_parking:"חניה (₪ לחודש)", f_maint:"טיפולים תקופתיים (₪ לשנה)", f_emergency:"קרן חירום לתקלות (₪ לחודש)",
       f_driverAge:"גיל הנהג", f_yearsLic:"ותק רישיון (שנים)", f_claimsFree:"שנים ללא תביעות (0–9)",
-      f_insType:"סוג ביטוח", ins_mandatory:"חובה בלבד", ins_thirdparty:"חובה + צד ג'", ins_comprehensive:"חובה + מקיף",
+      f_recentClaim:"הייתה תביעה בשנה האחרונה", f_insType:"סוג ביטוח",
+      ins_mandatory:"חובה בלבד", ins_thirdparty:"חובה + צד ג'", ins_comprehensive:"חובה + מקיף",
       f_compRate:"פרמיית מקיף (% מהשווי)", f_mandBase:"בסיס ביטוח חובה (₪)", f_tpBase:"בסיס צד ג' (₪)",
+      insShortMand:"חובה", insShortTP:"צד ג'", insShortComp:"מקיף",
+      insRealNote:"כל מספרי הביטוח כאן הם אומדן גס בלבד — אין מאגר ציבורי בישראל עם הצעות מחיר אמיתיות. לבדיקת מחירים אמיתיים מול חברות הביטוח, השתמש במחשבון הרשמי של רשות שוק ההון, ביטוח וחיסכון:",
+      insRealBtn:"מחשבון ביטוח חובה רשמי (CMA) ↗", insRealBtn2:"הר הביטוח — כל הפוליסות שלך ↗",
       driverTagYoung:"נהג צעיר", driverTagNew:"נהג חדש", driverTagVet:"נהג ותיק", ncdTag:"הנחת היעדר תביעות",
       cryptoDesc:"הנתונים מוצפנים בדפדפן עם AES‑256‑GCM ומפתח הנגזר מסיסמה (PBKDF2‑SHA‑256, 250K סבבים). ללא הסיסמה אי אפשר לשחזר.",
       passLabel:"סיסמת הצפנה", encBtn:"הצפן וייצא", copyBtn:"העתק", dlBtn:"הורד קובץ",
@@ -363,8 +380,12 @@
       f_priceFuel:"Fuel price (₪ / L)", f_priceEv:"Electricity price (₪ / kWh)",
       f_parking:"Parking (₪ / month)", f_maint:"Periodic service (₪ / year)", f_emergency:"Breakdown emergency fund (₪ / month)",
       f_driverAge:"Driver age", f_yearsLic:"Licence tenure (years)", f_claimsFree:"Claims‑free years (0–9)",
-      f_insType:"Insurance type", ins_mandatory:"Compulsory only", ins_thirdparty:"Compulsory + third‑party", ins_comprehensive:"Compulsory + comprehensive",
+      f_recentClaim:"Had a claim in the last year", f_insType:"Insurance type",
+      ins_mandatory:"Compulsory only", ins_thirdparty:"Compulsory + third‑party", ins_comprehensive:"Compulsory + comprehensive",
       f_compRate:"Comprehensive premium (% of value)", f_mandBase:"Compulsory base (₪)", f_tpBase:"Third‑party base (₪)",
+      insShortMand:"mandatory", insShortTP:"third‑party", insShortComp:"comprehensive",
+      insRealNote:"Every insurance figure here is a rough estimate — there is no public Israeli database of real quotes. To check real prices across insurers, use the official calculator from the Capital Market, Insurance and Savings Authority:",
+      insRealBtn:"Official CTP insurance calculator (CMA) ↗", insRealBtn2:"Har HaBituach — all your policies ↗",
       driverTagYoung:"Young driver", driverTagNew:"New driver", driverTagVet:"Experienced driver", ncdTag:"No‑claims discount",
       cryptoDesc:"Data is encrypted in the browser with AES‑256‑GCM and a key derived from your passphrase (PBKDF2‑SHA‑256, 250K rounds). Without the passphrase it cannot be recovered.",
       passLabel:"Encryption passphrase", encBtn:"Encrypt & export", copyBtn:"Copy", dlBtn:"Download file",
@@ -409,8 +430,12 @@
       f_priceFuel:"Цена топлива (₪ / л)", f_priceEv:"Цена электричества (₪ / кВт·ч)",
       f_parking:"Парковка (₪ / мес)", f_maint:"Периодическое ТО (₪ / год)", f_emergency:"Резерв на поломки (₪ / мес)",
       f_driverAge:"Возраст водителя", f_yearsLic:"Стаж прав (лет)", f_claimsFree:"Лет без страховых случаев (0–9)",
-      f_insType:"Тип страховки", ins_mandatory:"Только обязательная", ins_thirdparty:"Обязательная + третьи лица", ins_comprehensive:"Обязательная + КАСКО",
+      f_recentClaim:"Был страховой случай за последний год", f_insType:"Тип страховки",
+      ins_mandatory:"Только обязательная", ins_thirdparty:"Обязательная + третьи лица", ins_comprehensive:"Обязательная + КАСКО",
       f_compRate:"Премия КАСКО (% от стоимости)", f_mandBase:"База обязательной (₪)", f_tpBase:"База третьих лиц (₪)",
+      insShortMand:"ОСАГО", insShortTP:"третьи лица", insShortComp:"КАСКО",
+      insRealNote:"Все цифры страховки здесь — лишь грубая оценка: в Израиле нет публичной базы реальных предложений. Чтобы проверить настоящие цены у страховщиков, используйте официальный калькулятор Управления рынка капитала, страхования и сбережений:",
+      insRealBtn:"Официальный калькулятор ОСАГО (CMA) ↗", insRealBtn2:"Гар а‑Битуах — все ваши полисы ↗",
       driverTagYoung:"Молодой водитель", driverTagNew:"Новичок", driverTagVet:"Опытный водитель", ncdTag:"Скидка за безаварийность",
       cryptoDesc:"Данные шифруются в браузере алгоритмом AES‑256‑GCM ключом из вашей парольной фразы (PBKDF2‑SHA‑256, 250K итераций). Без фразы восстановить нельзя.",
       passLabel:"Парольная фраза", encBtn:"Зашифровать и экспортировать", copyBtn:"Копировать", dlBtn:"Скачать файл",
@@ -427,7 +452,7 @@
     manufacturer:"Toyota", model:"Corolla Hybrid", year:2021, fuel:"hybrid",
     pollution:4, price:148000, value:0,
     km:15000, consumption:0, fuelPrice:0, parking:0, maint:0, emergency:150,
-    driverAge:35, yearsLic:12, claimsFree:4, insType:"comprehensive",
+    driverAge:35, yearsLic:12, claimsFree:4, recentClaim:false, insType:"comprehensive",
     compRate:3.2, mandBase:1400, tpBase:1600, includeDepreciation:true
   };
   var state = Object.assign({}, DEF);
@@ -486,11 +511,13 @@
     var cf = Math.max(0, Math.min(9, num(s.claimsFree, 0)));
     var df = dAge<21 ? 2.2 : dAge<24 ? 1.8 : dAge<27 ? 1.35 : dAge<31 ? 1.12 : dAge<=65 ? 1.0 : dAge<=75 ? 1.15 : 1.4;
     if(yl<1) df += 0.45; else if(yl<3) df += 0.20; else if(yl<5) df += 0.08;
-    var ncd = Math.min(cf*0.07, 0.45);
+    var recentClaim = !!s.recentClaim;
+    var ncd = recentClaim ? 0 : Math.min(cf*0.07, 0.45);
+    var claimPenalty = recentClaim ? 0.28 : 0; // a claim in the last year overrides the no-claims discount and adds a surcharge
     var mandBase = num(s.mandBase, 1400), tpBase = num(s.tpBase, 1600), compRate = num(s.compRate, 3.2);
-    var mandatory     = Math.round(mandBase * (1 + (df-1)*0.6));
-    var thirdParty    = Math.round(tpBase * df * (1 - ncd*0.5));
-    var comprehensive = Math.round(curVal * compRate/100 * df * (1 - ncd) + tpBase*0.4);
+    var mandatory     = Math.round(mandBase * (1 + (df-1)*0.6) * (1 + claimPenalty*0.4));
+    var thirdParty    = Math.round(tpBase * df * (1 - ncd*0.5) * (1 + claimPenalty*0.7));
+    var comprehensive = Math.round(curVal * compRate/100 * df * (1 - ncd) * (1 + claimPenalty) + tpBase*0.4);
     var insurance = s.insType==="mandatory"  ? mandatory
                   : s.insType==="thirdparty" ? mandatory + thirdParty
                   :                            mandatory + comprehensive;
@@ -557,6 +584,7 @@
       {k:"driverAge", t:"f_driverAge", type:"number", min:16, max:99, step:1},
       {k:"yearsLic", t:"f_yearsLic", type:"number", min:0, max:80, step:1},
       {k:"claimsFree", t:"f_claimsFree", type:"number", min:0, max:9, step:1},
+      {k:"recentClaim", t:"f_recentClaim", type:"checkbox"},
       {k:"insType", t:"f_insType", type:"select", opts:[
         ["mandatory","ins_mandatory"],["thirdparty","ins_thirdparty"],["comprehensive","ins_comprehensive"]]},
       {k:"compRate", t:"f_compRate", type:"number", min:0, max:12, step:0.1},
@@ -567,6 +595,12 @@
 
   function fieldHTML(f){
     var val = state[f.k];
+    if(f.type==="checkbox"){
+      return '<label class="field" style="flex-direction:row;align-items:center;gap:10px;cursor:pointer">'
+        + '<input id="fld_'+f.k+'" data-k="'+f.k+'" type="checkbox"'+(val?' checked':'')
+        + ' style="width:18px;height:18px;margin:0;accent-color:var(--accent);flex:0 0 auto">'
+        + '<span style="font-size:13px;color:var(--ink)">'+T(f.t)+'</span></label>';
+    }
     var d = defaults(state.fuel);
     var ph = "";
     if(f.ph){
@@ -623,8 +657,9 @@
   function onFieldInput(e){
     var el = e.target.closest("[data-k]"); if(!el) return;
     var k = el.getAttribute("data-k");
-    var v = el.value;
-    if(el.tagName==="INPUT" && el.type==="number") v = v===""?0:parseFloat(v);
+    var v;
+    if(el.type==="checkbox") v = el.checked;
+    else { v = el.value; if(el.tagName==="INPUT" && el.type==="number") v = v===""?0:parseFloat(v); }
     var fuelChanged = (k==="fuel" && v!==state.fuel);
     state[k] = v;
     pristine = false;
@@ -652,10 +687,16 @@
            + 'title="'+T("cat"+cap(k))+' · '+money(v)+'">'+label+'</div>';
     }).join("");
 
+    var insParts = [T("insShortMand")+" "+money(d.mandatory)];
+    if(state.insType==="thirdparty") insParts.push(T("insShortTP")+" "+money(d.thirdParty));
+    else if(state.insType==="comprehensive") insParts.push(T("insShortComp")+" "+money(d.comprehensive));
+    var insBreakdown = '<div class="num" style="font-size:11px;color:var(--muted);margin-top:2px">'+insParts.join(" · ")+'</div>';
+
     var rows = catKeys.map(function(k){
       var v = r.cats[k], pct = r.year>0 ? v/r.year*100 : 0;
       return '<tr>'
-        + '<td><span class="sw" style="background:var('+CAT_VAR[k]+')"></span>'+T("cat"+cap(k))+'</td>'
+        + '<td><span class="sw" style="background:var('+CAT_VAR[k]+')"></span>'+T("cat"+cap(k))
+          + (k==="insurance" ? insBreakdown : '') + '</td>'
         + '<td class="n">'+money(v/12)+'</td>'
         + '<td class="n">'+money(v)+'</td>'
         + '<td style="min-width:110px"><span class="num" style="font-size:11px;color:var(--muted)">'+pct.toFixed(1)+'%</span>'
