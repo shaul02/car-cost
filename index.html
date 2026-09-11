@@ -203,6 +203,33 @@
   @media (max-width:520px){ dialog#settingsDialog{width:100vw; max-width:100vw; max-height:100vh;
     height:100%; border-radius:0; margin:0} }
 
+  /* ============================ PRINT / PDF REPORT ============================ */
+  #printSheet{display:none}
+  @media print{
+    @page{ margin:14mm }
+    body > *:not(#printSheet){ display:none !important }
+    #printSheet{ display:block !important; color:#17140d; font-family:var(--sans); font-size:12px; line-height:1.5 }
+    #printSheet h1{ font-size:20px; margin:0 0 4px }
+    #printSheet .meta{ color:#6b6656; font-size:11px; margin-bottom:18px }
+    #printSheet h2{ font-size:13px; font-weight:600; margin:20px 0 8px; padding-bottom:4px; border-bottom:1px solid #ddd8c8 }
+    #printSheet .kvgrid{ display:grid; grid-template-columns:1fr 1fr; gap:0 18px }
+    #printSheet .kvgrid div{ display:flex; justify-content:space-between; gap:10px; padding:3px 0; border-bottom:1px dotted #e4e0d1 }
+    #printSheet .kvgrid span:first-child{ color:#6b6656 }
+    #printSheet .kvgrid span:last-child{ font-family:var(--mono); font-variant-numeric:tabular-nums }
+    #printSheet table{ width:100%; border-collapse:collapse; font-size:11.5px }
+    #printSheet th{ text-align:start; font-weight:600; padding:5px 6px; border-bottom:1px solid #17140d;
+      font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:#4a4638 }
+    #printSheet td{ padding:6px; border-bottom:1px solid #e4e0d1 }
+    #printSheet td.n{ text-align:end; font-family:var(--mono); font-variant-numeric:tabular-nums }
+    #printSheet tr.total td{ font-weight:700; border-top:1.5px solid #17140d; border-bottom:0 }
+    #printSheet .tiles3{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:14px 0 4px }
+    #printSheet .tiles3 div{ border:1px solid #ddd8c8; border-radius:8px; padding:10px }
+    #printSheet .tiles3 .lbl{ font-size:9.5px; text-transform:uppercase; letter-spacing:.08em; color:#6b6656 }
+    #printSheet .tiles3 .val{ font-family:var(--mono); font-weight:700; font-size:17px; margin-top:3px }
+    #printSheet .sw{ display:inline-block; width:9px; height:9px; border-radius:2px; margin-inline-end:6px }
+    #printSheet .foot{ margin-top:22px; padding-top:10px; border-top:1px solid #ddd8c8; color:#6b6656; font-size:9.5px; line-height:1.6 }
+  }
+
   @media (max-width:720px){
     .tiles{grid-template-columns:1fr}
     .grid{grid-template-columns:1fr}
@@ -305,6 +332,8 @@
   </div>
 </dialog>
 
+<div id="printSheet"></div>
+
 <script>
 (function(){
   "use strict";
@@ -331,6 +360,7 @@
       secVehicle:"מפרט הרכב", secUsage:"שימוש ועלויות שוטפות", secDriver:"פרופיל נהג וביטוח",
       secCrypto:"שמירה מוצפנת (AES‑256‑GCM)",
       exampleBanner:"מוצג תרחיש לדוגמה. הזן מספר רישוי או ערוך את השדות למטה לחישוב אמיתי.",
+      printBtn:"הורד PDF", printedOn:"הופק בתאריך",
       tileMonth:"עלות חודשית", tileYear:"עלות שנתית", tilePerKm:"עלות לק\"מ",
       tileMonthSub:"ממוצע כולל ירידת ערך", tileMonthSubNoDep:"ממוצע, לא כולל ירידת ערך",
       tileYearSub:"סך כל ההוצאות בשנה", tilePerKmSub:"לפי הקילומטראז' שהוזן",
@@ -381,6 +411,7 @@
       secVehicle:"Vehicle spec", secUsage:"Usage & running costs", secDriver:"Driver profile & insurance",
       secCrypto:"Encrypted save (AES‑256‑GCM)",
       exampleBanner:"Showing an example scenario. Enter a plate or edit the fields below for a real calculation.",
+      printBtn:"Download PDF", printedOn:"Generated on",
       tileMonth:"Monthly cost", tileYear:"Annual cost", tilePerKm:"Cost per km",
       tileMonthSub:"average, depreciation included", tileMonthSubNoDep:"average, excluding depreciation",
       tileYearSub:"total spend over a year", tilePerKmSub:"based on the mileage entered",
@@ -431,6 +462,7 @@
       secVehicle:"Характеристики авто", secUsage:"Пробег и текущие расходы", secDriver:"Профиль водителя и страховка",
       secCrypto:"Зашифрованное сохранение (AES‑256‑GCM)",
       exampleBanner:"Показан пример. Введите номер или измените поля ниже для реального расчёта.",
+      printBtn:"Скачать PDF", printedOn:"Сформировано",
       tileMonth:"Расходы в месяц", tileYear:"Расходы в год", tilePerKm:"Стоимость за км",
       tileMonthSub:"в среднем, с учётом амортизации", tileMonthSubNoDep:"в среднем, без учёта амортизации",
       tileYearSub:"суммарные траты за год", tilePerKmSub:"по указанному пробегу",
@@ -736,8 +768,11 @@
       + '</div>'
       + '<div class="chartcard">'
         + '<div class="head"><h3>'+T("chartTitle")+'</h3>'
-          + '<label class="switch"><input type="checkbox" id="depToggle"'+(d.depIncluded?' checked':'')+'>'
-          + '<span class="track"></span>'+T("f_includeDep")+'</label></div>'
+          + '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">'
+            + '<label class="switch"><input type="checkbox" id="depToggle"'+(d.depIncluded?' checked':'')+'>'
+            + '<span class="track"></span>'+T("f_includeDep")+'</label>'
+            + '<button class="btn secondary" id="printBtn" type="button" style="min-height:34px;padding:0 14px;font-size:12.5px">🖨&nbsp;'+T("printBtn")+'</button>'
+          + '</div></div>'
         + '<div class="cap">'+T("chartCap")+' · '+esc(state.manufacturer)+' '+esc(state.model)+' · '
           + state.year+' · '+T("fuel_"+state.fuel)+' · '+T("f_value")+' ≈ '+money(r.curVal)+depCap+'</div>'
         + '<div class="stack" role="img" aria-label="'+T("chartTitle")+'">'+segs+'</div>'
@@ -758,6 +793,64 @@
   }
   function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+
+  /* ============================ PRINT / PDF REPORT ============================ */
+  function kvBlock(rows){
+    return '<div class="kvgrid">'+rows.map(function(p){
+      return '<div><span>'+p[0]+'</span><span>'+p[1]+'</span></div>';
+    }).join("")+'</div>';
+  }
+
+  function buildPrintSheet(){
+    var r = compute(state), d = r.detail;
+    var catKeys = CAT_KEYS.filter(function(k){ return k!=="depreciation" || d.depIncluded; });
+    var now = new Date();
+    var stamp = now.toLocaleDateString(DICT[lang]._loc) + " " + now.toLocaleTimeString(DICT[lang]._loc, {hour:"2-digit", minute:"2-digit"});
+
+    var vehicleKV = [
+      [T("f_manufacturer"), esc(state.manufacturer)], [T("f_model"), esc(state.model)],
+      [T("f_year"), state.year], [T("f_fuel"), T("fuel_"+state.fuel)],
+      [T("f_pollution"), state.pollution], [T("f_price"), money(state.price)],
+      [T("f_value"), money(r.curVal)]
+    ];
+    var driverKV = [
+      [T("f_km"), fmt0(state.km)], [T("f_driverAge"), state.driverAge],
+      [T("f_yearsLic"), state.yearsLic], [T("f_claimsFree"), state.claimsFree],
+      [T("f_recentClaim"), state.recentClaim ? "✓" : "—"],
+      [T("f_insType"), T("ins_"+state.insType)]
+    ];
+
+    var insParts = [T("insShortMand")+" "+money(d.mandatory)];
+    if(state.insType==="thirdparty") insParts.push(T("insShortTP")+" "+money(d.thirdParty));
+    else if(state.insType==="comprehensive") insParts.push(T("insShortComp")+" "+money(d.comprehensive));
+
+    var rows = catKeys.map(function(k){
+      var v = r.cats[k], pct = r.year>0 ? v/r.year*100 : 0;
+      var extra = k==="insurance" ? ' <span style="color:#7a7566">('+insParts.join(" · ")+')</span>' : '';
+      return '<tr><td><span class="sw" style="background:var('+CAT_VAR[k]+')"></span>'+T("cat"+cap(k))+extra+'</td>'
+        + '<td class="n">'+money(v/12)+'</td><td class="n">'+money(v)+'</td>'
+        + '<td class="n">'+pct.toFixed(1)+'%</td></tr>';
+    }).join("");
+
+    document.getElementById("printSheet").innerHTML =
+        '<h1>'+T("appTitle")+'</h1>'
+      + '<div class="meta">'+esc(state.manufacturer)+' '+esc(state.model)+' · '+state.year+' · '+T("printedOn")+' '+stamp+'</div>'
+      + '<h2>'+T("secVehicle")+'</h2>'+kvBlock(vehicleKV)
+      + '<h2>'+T("secDriver")+'</h2>'+kvBlock(driverKV)
+      + '<h2>'+T("chartTitle")+'</h2>'
+      + '<div class="tiles3">'
+        + '<div><div class="lbl">'+T("tileMonth")+'</div><div class="val">'+money(r.month)+'</div></div>'
+        + '<div><div class="lbl">'+T("tileYear")+'</div><div class="val">'+money(r.year)+'</div></div>'
+        + '<div><div class="lbl">'+T("tilePerKm")+'</div><div class="val">'+money1(r.perKm)+'</div></div>'
+      + '</div>'
+      + '<table><thead><tr><th>'+T("thCat")+'</th><th style="text-align:end">'+T("thMonth")+'</th>'
+        + '<th style="text-align:end">'+T("thYear")+'</th><th style="text-align:end">'+T("thShare")+'</th></tr></thead>'
+      + '<tbody>'+rows
+        + '<tr class="total"><td>'+T("totalRow")+'</td><td class="n">'+money(r.month)+'</td>'
+        + '<td class="n">'+money(r.year)+'</td><td class="n">100%</td></tr>'
+      + '</tbody></table>'
+      + '<div class="foot">'+T("footer")+'</div>';
+  }
 
   function setStatus(kind, key){
     var s = document.getElementById("status");
@@ -1007,6 +1100,11 @@
       state.includeDepreciation = e.target.checked;
       pristine = false; persist(); renderResults();
     }
+  });
+  document.getElementById("results").addEventListener("click", function(e){
+    if(!e.target.closest("#printBtn")) return;
+    buildPrintSheet();
+    requestAnimationFrame(function(){ window.print(); });
   });
 
   var settingsDlg = document.getElementById("settingsDialog");
