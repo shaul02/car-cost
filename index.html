@@ -11,7 +11,7 @@
     --accent:#b8860b; --accent-2:#946c08; --accent-ink:#1e1a0c;
     --plate-yellow:#f4c430; --plate-ink:#141310; --plate-blue:#1f3a93;
     --good:#1c7c3b; --warn:#9a6a12; --bad:#c0392b;
-    --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300;
+    --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300; --s7:#4a3aa7;
     --shadow:0 1px 2px rgba(30,28,20,.06), 0 14px 34px -18px rgba(30,28,20,.22);
     --radius:14px;
     --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", "Courier New", monospace;
@@ -25,7 +25,7 @@
       --accent:#f2b705; --accent-2:#f2b705; --accent-ink:#1e1a0c;
       --plate-yellow:#f4c430; --plate-ink:#141310; --plate-blue:#31489f;
       --good:#5fbf7a; --warn:#e0a94a; --bad:#e4634f;
-      --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#22a022;
+      --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#22a022; --s7:#9085e9;
       --shadow:0 1px 0 rgba(0,0,0,.4), 0 18px 40px -22px rgba(0,0,0,.7);
     }
   }
@@ -36,7 +36,7 @@
     --accent:#f2b705; --accent-2:#f2b705; --accent-ink:#1e1a0c;
     --plate-yellow:#f4c430; --plate-ink:#141310; --plate-blue:#31489f;
     --good:#5fbf7a; --warn:#e0a94a; --bad:#e4634f;
-    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#22a022;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#22a022; --s7:#9085e9;
     --shadow:0 1px 0 rgba(0,0,0,.4), 0 18px 40px -22px rgba(0,0,0,.7);
   }
 
@@ -187,6 +187,28 @@
     resize:vertical; margin-top:12px}
   .kv{display:flex; gap:8px; flex-wrap:wrap; font-size:12px; color:var(--muted); margin-top:10px}
   .kv span{background:var(--surface-2); border:1px solid var(--line); border-radius:999px; padding:3px 10px; font-family:var(--mono)}
+  .link-out{width:100%; border:1px solid var(--line); background:var(--surface-2); border-radius:10px;
+    padding:10px 12px; font-family:var(--mono); font-size:11.5px; color:var(--ink-2); margin-top:10px}
+
+  /* ============================ PROJECTION ============================ */
+  .projRow{display:flex; align-items:flex-end; gap:10px; height:150px; margin-top:16px}
+  .pbar{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%}
+  .pbar .pval{font-family:var(--mono); font-size:11px; font-weight:600; margin-bottom:6px; white-space:nowrap; color:var(--ink)}
+  .pbar .pfill{width:100%; max-width:56px; border-radius:6px 6px 2px 2px; background:var(--accent); min-height:4px}
+  .pbar .plabel{margin-top:8px; font-size:10.5px; color:var(--muted); font-family:var(--mono)}
+
+  /* ============================ COMPARE ============================ */
+  .compareGrid{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:16px}
+  .stack.mini{height:26px}
+  .cveh{border:1px solid var(--line); border-radius:10px; padding:14px; min-width:0}
+  .cveh .cvehName{font-weight:600; font-size:13.5px; margin-bottom:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .cvehTiles{display:flex; gap:16px; margin-bottom:12px}
+  .cvehTiles div span{display:block}
+  .cvehTiles .lbl{font-size:9.5px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted)}
+  .cvehTiles .val{font-family:var(--mono); font-weight:700; font-size:16px; margin-top:2px}
+  .compareWinner{margin-top:14px; padding:10px 12px; border-radius:8px; background:var(--surface-2);
+    font-size:13px; text-align:center; font-weight:500}
+  @media (max-width:640px){ .compareGrid{grid-template-columns:1fr} }
 
   footer{margin-top:44px; padding-top:18px; border-top:1px solid var(--line);
     color:var(--muted); font-size:12px; line-height:1.7}
@@ -330,6 +352,16 @@
       </label>
       <button class="btn secondary" id="clearBtn" type="button" data-i18n="clearBtn">מחק שמירה מקומית</button>
     </div>
+
+    <div style="margin-top:22px;padding-top:18px;border-top:1px solid var(--line)">
+      <h3 style="font-size:14px;font-weight:600;margin-bottom:6px" data-i18n="shareTitle">קישור שיתוף (ללא הצפנה)</h3>
+      <p style="font-size:12.5px;color:var(--ink-2);margin:0" data-i18n="shareDesc">קישור שמכיל את כל הנתונים בתוכו — נוח לשליחה, אך לא מוצפן. כל מי שמקבל את הקישור רואה את הנתונים.</p>
+      <div class="rowbtns">
+        <button class="btn secondary" id="shareBtn" type="button" data-i18n="shareBtn">🔗 צור קישור</button>
+        <button class="btn secondary" id="shareCopyBtn" type="button" data-i18n="copyBtn">העתק</button>
+      </div>
+      <input class="link-out" id="shareOut" readonly placeholder="—">
+    </div>
   </div>
 </dialog>
 
@@ -371,10 +403,18 @@
       thCat:"מרכיב", thMonth:"₪ לחודש", thYear:"₪ לשנה", thShare:"נתח",
       catDepreciation:"ירידת ערך", catFuel:"דלק / אנרגיה", catInsurance:"ביטוח",
       catFees:"אגרות ורישוי", catMaintenance:"תחזוקה וטיפולים", catMisc:"צמיגים, בלמים, חניה, חירום",
+      catFinancing:"מימון (הלוואה/ליסינג)", perMonthShort:"חודש", monthsShort:"תשל'",
       totalRow:"סה\"כ החזקה",
+      projTitle:"תחזית ל-5 שנים", projCap:"עלות שנתית כוללת, כשירידת הערך ממשיכה מהשווי הנוכחי וההנחה על היעדר תביעות גדלה בהדרגה",
+      compareSaveBtn:"שמור להשוואה", compareTitle:"השוואה", compareSwap:"החלף", compareClear:"נקה השוואה",
+      compareCheaperBy:"זול יותר ב-", compareTie:"אותה עלות בקירוב",
+      kmCalcToggle:"מחשבון ק\"מ לפי נסיעה", kmCalcDist:"מרחק הלוך לעבודה (ק\"מ)", kmCalcDays:"ימי נסיעה בשבוע", kmCalcApply:"חשב והחל",
+      shareTitle:"קישור שיתוף (ללא הצפנה)", shareDesc:"קישור שמכיל את כל הנתונים בתוכו — נוח לשליחה, אך לא מוצפן. כל מי שמקבל את הקישור רואה את הנתונים.",
+      shareBtn:"🔗 צור קישור", shareOk:"נוצר קישור — העתק ושלח",
       f_manufacturer:"יצרן", f_model:"דגם", f_year:"שנת ייצור", f_fuel:"סוג הנעה",
       f_pollution:"קבוצת זיהום (0–15)", f_price:"מחיר מחירון כחדש (₪)", f_value:"שווי נוכחי משוער (₪)",
       f_valueHint:"מחושב אוטומטית מהמחיר והגיל — ניתן לעדכן",
+      f_financed:"מימון בהלוואה/ליסינג", f_loanAmount:"סכום מימון (₪)", f_loanRate:"ריבית שנתית (%)", f_loanMonths:"תקופה (חודשים)",
       fuel_petrol:"בנזין", fuel_diesel:"דיזל", fuel_hybrid:"היברידי", fuel_electric:"חשמלי",
       f_km:"קילומטראז' שנתי", f_consFuel:"צריכת דלק (ליטר ל‑100 ק\"מ)", f_consEv:"צריכת חשמל (קוט\"ש ל‑100 ק\"מ)",
       f_priceFuel:"מחיר דלק (₪ לליטר)", f_priceEv:"מחיר חשמל (₪ לקוט\"ש)",
@@ -422,10 +462,18 @@
       thCat:"Component", thMonth:"₪ / month", thYear:"₪ / year", thShare:"Share",
       catDepreciation:"Depreciation", catFuel:"Fuel / energy", catInsurance:"Insurance",
       catFees:"Licence & fees", catMaintenance:"Maintenance & service", catMisc:"Tyres, brakes, parking, emergency",
+      catFinancing:"Financing (loan/lease)", perMonthShort:"mo", monthsShort:"pmts",
       totalRow:"Total ownership",
+      projTitle:"5‑year projection", projCap:"Total annual cost, with depreciation continuing from today's value and the no‑claims discount growing each year",
+      compareSaveBtn:"Save for comparison", compareTitle:"Comparison", compareSwap:"Swap", compareClear:"Clear comparison",
+      compareCheaperBy:"cheaper by", compareTie:"about the same cost",
+      kmCalcToggle:"Km‑by‑commute calculator", kmCalcDist:"One‑way commute distance (km)", kmCalcDays:"Driving days per week", kmCalcApply:"Calculate & apply",
+      shareTitle:"Share link (unencrypted)", shareDesc:"A link that carries all the data in itself — convenient to send, but not encrypted. Anyone who gets the link can see the data.",
+      shareBtn:"🔗 Create link", shareOk:"Link created — copy and send",
       f_manufacturer:"Manufacturer", f_model:"Model", f_year:"Model year", f_fuel:"Drivetrain",
       f_pollution:"Pollution group (0–15)", f_price:"List price when new (₪)", f_value:"Estimated current value (₪)",
       f_valueHint:"Auto‑derived from price and age — you can override",
+      f_financed:"Financed with a loan/lease", f_loanAmount:"Loan amount (₪)", f_loanRate:"Annual interest rate (%)", f_loanMonths:"Term (months)",
       fuel_petrol:"Petrol", fuel_diesel:"Diesel", fuel_hybrid:"Hybrid", fuel_electric:"Electric",
       f_km:"Annual mileage (km)", f_consFuel:"Fuel use (L / 100 km)", f_consEv:"Energy use (kWh / 100 km)",
       f_priceFuel:"Fuel price (₪ / L)", f_priceEv:"Electricity price (₪ / kWh)",
@@ -473,10 +521,18 @@
       thCat:"Составляющая", thMonth:"₪ / мес", thYear:"₪ / год", thShare:"Доля",
       catDepreciation:"Амортизация", catFuel:"Топливо / энергия", catInsurance:"Страховка",
       catFees:"Госпошлина и регистрация", catMaintenance:"Обслуживание и ТО", catMisc:"Шины, тормоза, парковка, резерв",
+      catFinancing:"Финансирование (кредит/лизинг)", perMonthShort:"мес", monthsShort:"плат.",
       totalRow:"Итого владение",
+      projTitle:"Прогноз на 5 лет", projCap:"Суммарные годовые расходы: амортизация продолжается от текущей стоимости, скидка за безаварийность растёт каждый год",
+      compareSaveBtn:"Сохранить для сравнения", compareTitle:"Сравнение", compareSwap:"Поменять местами", compareClear:"Очистить сравнение",
+      compareCheaperBy:"дешевле на", compareTie:"примерно одинаковая стоимость",
+      kmCalcToggle:"Калькулятор км по маршруту", kmCalcDist:"Расстояние до работы в одну сторону (км)", kmCalcDays:"Дней за рулём в неделю", kmCalcApply:"Рассчитать и применить",
+      shareTitle:"Ссылка для отправки (без шифрования)", shareDesc:"Ссылка содержит все данные внутри себя — удобно отправлять, но без шифрования. Каждый, кто получит ссылку, увидит данные.",
+      shareBtn:"🔗 Создать ссылку", shareOk:"Ссылка создана — скопируйте и отправьте",
       f_manufacturer:"Производитель", f_model:"Модель", f_year:"Год выпуска", f_fuel:"Тип привода",
       f_pollution:"Группа загрязнения (0–15)", f_price:"Цена нового по прайсу (₪)", f_value:"Оценочная текущая стоимость (₪)",
       f_valueHint:"Рассчитано из цены и возраста — можно изменить",
+      f_financed:"Куплен в кредит/лизинг", f_loanAmount:"Сумма кредита (₪)", f_loanRate:"Годовая ставка (%)", f_loanMonths:"Срок (мес.)",
       fuel_petrol:"Бензин", fuel_diesel:"Дизель", fuel_hybrid:"Гибрид", fuel_electric:"Электро",
       f_km:"Годовой пробег (км)", f_consFuel:"Расход топлива (л / 100 км)", f_consEv:"Расход энергии (кВт·ч / 100 км)",
       f_priceFuel:"Цена топлива (₪ / л)", f_priceEv:"Цена электричества (₪ / кВт·ч)",
@@ -505,14 +561,32 @@
     pollution:4, price:148000, value:0,
     km:15000, consumption:0, fuelPrice:0, parking:0, maint:0, emergency:150,
     driverAge:35, yearsLic:12, claimsFree:4, recentClaim:false, insType:"comprehensive",
-    compRate:3.2, mandBase:1400, tpBase:1600, includeDepreciation:true
+    compRate:3.2, mandBase:1400, tpBase:1600, includeDepreciation:true,
+    financed:false, loanAmount:0, loanRate:0, loanMonths:0
   };
   var state = Object.assign({}, DEF);
   var lang = LS.get("ccil.lang") || "he";
   if(!DICT[lang]) lang = "he";
   var pristine = true;
+  var compareSnap = null; // {vu:{...vehicle+usage fields...}, ts}
   var saved = LS.get("ccil.state");
   if(saved){ try{ state = Object.assign({}, DEF, JSON.parse(saved)); pristine = false; }catch(e){} }
+  var savedCmp = LS.get("ccil.compareSnap");
+  if(savedCmp){ try{ compareSnap = JSON.parse(savedCmp); }catch(e){} }
+
+  // A shared link (#s=...) always wins over what was saved locally.
+  (function loadFromShareLink(){
+    try{
+      var m = (location.hash||"").match(/(?:^#|[&])s=([^&]+)/);
+      if(!m) return;
+      var b64 = m[1].replace(/-/g,'+').replace(/_/g,'/');
+      while(b64.length % 4) b64 += '=';
+      var payload = JSON.parse(decodeURIComponent(escape(atob(b64))));
+      if(payload && payload.s){ state = Object.assign({}, DEF, payload.s); pristine = false; }
+      if(payload && payload.l && DICT[payload.l]) lang = payload.l;
+      if(payload && payload.cs) compareSnap = payload.cs;
+    }catch(e){}
+  })();
 
   var T = function(k){ return (DICT[lang] && DICT[lang][k]) || DICT.he[k] || k; };
   var fmt0 = function(n){ return new Intl.NumberFormat(DICT[lang]._loc, {maximumFractionDigits:0}).format(Math.round(n||0)); };
@@ -591,7 +665,17 @@
     var emergency = Math.max(0, num(s.emergency, 0)) * 12;
     var misc = tires + brakes + parking + emergency;
 
-    var cats = { depreciation:depYear, fuel:fuelCost, insurance:insurance, fees:fees, maintenance:maintenance, misc:misc };
+    // financing (optional loan/lease) — standard amortized monthly payment
+    var financed = !!s.financed;
+    var loanAmt = Math.max(0, num(s.loanAmount, 0) || price);
+    var loanRate = Math.max(0, num(s.loanRate, 0) || 6.5);
+    var loanMonths = Math.max(1, num(s.loanMonths, 0) || 60);
+    var mRate = loanRate/100/12;
+    var pmt = financed ? (mRate>0 ? loanAmt*mRate/(1-Math.pow(1+mRate,-loanMonths)) : loanAmt/loanMonths) : 0;
+    var financing = financed ? Math.round(pmt*12) : 0;
+
+    var cats = { depreciation:depYear, fuel:fuelCost, insurance:insurance, fees:fees,
+                 maintenance:maintenance, misc:misc, financing:financing };
     var year = 0; for(var k in cats) year += cats[k];
 
     return {
@@ -600,16 +684,64 @@
       detail:{ tires:tires, brakes:brakes, parking:parking, emergency:emergency,
                mandatory:mandatory, thirdParty:thirdParty, comprehensive:comprehensive,
                ncd:ncd, df:df, km:km, young: dAge<24, isNew: yl<3,
-               depIncluded:depIncluded, depYearRaw:depYearRaw }
+               depIncluded:depIncluded, depYearRaw:depYearRaw,
+               financed:financed, loanPMT:Math.round(pmt), loanAmt:loanAmt, loanRate:loanRate, loanMonths:loanMonths }
     };
   }
 
+  // Projects the next n calendar years: depreciation continues from this year's real
+  // current value, claims-free years grow by one each year, a recent-claim penalty
+  // ages out after year 1, and a loan (if any) stops once its term is paid off.
+  function projectYears(n){
+    var r0 = compute(state);
+    var nowY = new Date().getFullYear();
+    var loanMonths = Math.max(1, num(state.loanMonths, 0) || 60);
+    var pts = [];
+    var curVal = r0.curVal;
+    for(var i=0; i<n; i++){
+      var thisAge = r0.age + i;
+      if(i>0) curVal = Math.round(curVal * (1 - DEP_RATES[Math.min(thisAge-1, DEP_RATES.length-1)]));
+      var synth = Object.assign({}, state, {
+        year: nowY - thisAge,
+        value: curVal,
+        claimsFree: Math.min(9, num(state.claimsFree, 0) + i),
+        recentClaim: i>0 ? false : state.recentClaim,
+        financed: state.financed && (i*12 < loanMonths)
+      });
+      var rr = compute(synth);
+      pts.push({ yearIndex:i, calYear: nowY+i, age:thisAge, total: rr.year, month: rr.month });
+    }
+    return pts;
+  }
+
+  // Compare mode: freeze just the vehicle+usage fields of a second car; driver
+  // profile and the depreciation toggle always stay shared/live with the main form.
+  var VU_KEYS = ["manufacturer","model","year","fuel","pollution","price","value",
+                 "km","consumption","fuelPrice","maint","parking","emergency"];
+  function saveCompareSnapshot(){
+    var vu = {}; VU_KEYS.forEach(function(k){ vu[k] = state[k]; });
+    compareSnap = { vu:vu, ts:Date.now() };
+    LS.set("ccil.compareSnap", JSON.stringify(compareSnap));
+    renderResults();
+  }
+  function clearCompareSnapshot(){
+    compareSnap = null; LS.del("ccil.compareSnap"); renderResults();
+  }
+  function swapCompareSnapshot(){
+    if(!compareSnap) return;
+    var curVU = {}; VU_KEYS.forEach(function(k){ curVU[k] = state[k]; });
+    VU_KEYS.forEach(function(k){ state[k] = compareSnap.vu[k]; });
+    compareSnap.vu = curVU;
+    persist(); LS.set("ccil.compareSnap", JSON.stringify(compareSnap));
+    renderForms(); renderResults();
+  }
+
   /* ============================ FIELD CONFIG ============================ */
-  var CAT_KEYS = ["depreciation","fuel","insurance","fees","maintenance","misc"];
-  var CAT_VAR  = {depreciation:"--s1", fuel:"--s2", insurance:"--s3", fees:"--s4", maintenance:"--s5", misc:"--s6"};
+  var CAT_KEYS = ["depreciation","fuel","insurance","fees","maintenance","misc","financing"];
+  var CAT_VAR  = {depreciation:"--s1", fuel:"--s2", insurance:"--s3", fees:"--s4", maintenance:"--s5", misc:"--s6", financing:"--s7"};
 
   function vehicleFields(){
-    return [
+    var f = [
       {k:"manufacturer", t:"f_manufacturer", type:"text"},
       {k:"model", t:"f_model", type:"text"},
       {k:"year", t:"f_year", type:"number", min:1990, max:new Date().getFullYear()+1, step:1},
@@ -617,8 +749,15 @@
         ["petrol","fuel_petrol"],["diesel","fuel_diesel"],["hybrid","fuel_hybrid"],["electric","fuel_electric"]]},
       {k:"pollution", t:"f_pollution", type:"number", min:0, max:15, step:1},
       {k:"price", t:"f_price", type:"number", min:0, step:1000},
-      {k:"value", t:"f_value", type:"number", min:0, step:1000, hint:"f_valueHint", ph:true}
+      {k:"value", t:"f_value", type:"number", min:0, step:1000, hint:"f_valueHint", ph:true},
+      {k:"financed", t:"f_financed", type:"checkbox"}
     ];
+    if(state.financed){
+      f.push({k:"loanAmount", t:"f_loanAmount", type:"number", min:0, step:1000, ph:true});
+      f.push({k:"loanRate", t:"f_loanRate", type:"number", min:0, max:25, step:0.1, ph:true});
+      f.push({k:"loanMonths", t:"f_loanMonths", type:"number", min:1, max:96, step:1, ph:true});
+    }
+    return f;
   }
   function usageFields(){
     var ev = state.fuel==="electric";
@@ -660,6 +799,9 @@
       else if(f.k==="consumption") ph = String(d.consumption);
       else if(f.k==="fuelPrice") ph = String(d.fuelPrice);
       else if(f.k==="maint") ph = String(d.maint);
+      else if(f.k==="loanAmount") ph = String(Math.max(0, num(state.price, 0)) || "");
+      else if(f.k==="loanRate") ph = "6.5";
+      else if(f.k==="loanMonths") ph = "60";
     }
     var showVal = (f.ph && (val===0 || val==="0" || val==null)) ? "" : val;
     var h = '<div class="field"><label for="fld_'+f.k+'">'+T(f.t)+'</label>';
@@ -695,9 +837,21 @@
     document.title = lang==="he" ? "עלות רכב · מחשבון" : lang==="ru" ? "Стоимость авто · калькулятор" : "Car cost · calculator";
   }
 
+  function kmHelperHTML(){
+    return '<div class="field" style="grid-column:1/-1">'
+      + '<details class="kmcalc"><summary style="cursor:pointer;font-size:12.5px;color:var(--ink-2)">🧮 '+T("kmCalcToggle")+'</summary>'
+      + '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;align-items:end">'
+        + '<div class="field" style="flex:1;min-width:130px"><label>'+T("kmCalcDist")+'</label>'
+          + '<input id="kmDist" type="number" class="num" min="0" step="0.5" value="15"></div>'
+        + '<div class="field" style="flex:1;min-width:130px"><label>'+T("kmCalcDays")+'</label>'
+          + '<input id="kmDays" type="number" class="num" min="0" max="7" step="1" value="5"></div>'
+        + '<button class="btn secondary" id="kmCalcApply" type="button" style="min-height:42px">'+T("kmCalcApply")+'</button>'
+      + '</div></details></div>';
+  }
+
   function renderForms(){
     document.getElementById("gridVehicle").innerHTML = vehicleFields().map(fieldHTML).join("");
-    document.getElementById("gridUsage").innerHTML   = usageFields().map(fieldHTML).join("");
+    document.getElementById("gridUsage").innerHTML   = usageFields().map(fieldHTML).join("") + kmHelperHTML();
     document.getElementById("gridDriver").innerHTML  = driverFields().map(fieldHTML).join("");
     var grids = document.querySelectorAll("#gridVehicle, #gridUsage, #gridDriver");
     for(var g=0; g<grids.length; g++){
@@ -712,12 +866,27 @@
     var v;
     if(el.type==="checkbox") v = el.checked;
     else { v = el.value; if(el.tagName==="INPUT" && el.type==="number") v = v===""?0:parseFloat(v); }
-    var fuelChanged = (k==="fuel" && v!==state.fuel);
+    var rebuildForms = (k==="fuel" && v!==state.fuel) || k==="financed";
     state[k] = v;
     pristine = false;
     persist();
-    if(fuelChanged){ renderForms(); }
+    if(rebuildForms){ renderForms(); }
     renderResults();
+  }
+
+  function relevantCatKeys(d, s){
+    return CAT_KEYS.filter(function(k){
+      if(k==="depreciation") return d.depIncluded;
+      if(k==="financing") return d.financed;
+      return true;
+    });
+  }
+
+  function miniStack(catKeys, rr){
+    return catKeys.map(function(k){
+      var v = rr.cats[k];
+      return '<div class="seg-b" style="flex-grow:'+Math.max(v,1)+';background:var('+CAT_VAR[k]+')" title="'+T("cat"+cap(k))+' · '+money(v)+'"></div>';
+    }).join("");
   }
 
   function renderResults(){
@@ -730,7 +899,7 @@
     else tags.push(T("driverTagVet"));
     if(d.ncd>0) tags.push(T("ncdTag")+" −"+Math.round(d.ncd*100)+"%");
 
-    var catKeys = CAT_KEYS.filter(function(k){ return k!=="depreciation" || d.depIncluded; });
+    var catKeys = relevantCatKeys(d, state);
 
     var segs = catKeys.map(function(k){
       var v = r.cats[k], pct = r.year>0 ? v/r.year*100 : 0;
@@ -743,12 +912,16 @@
     if(state.insType==="thirdparty") insParts.push(T("insShortTP")+" "+money(d.thirdParty));
     else if(state.insType==="comprehensive") insParts.push(T("insShortComp")+" "+money(d.comprehensive));
     var insBreakdown = '<div class="num" style="font-size:11px;color:var(--muted);margin-top:2px">'+insParts.join(" · ")+'</div>';
+    var finBreakdown = d.financed
+      ? '<div class="num" style="font-size:11px;color:var(--muted);margin-top:2px">'
+        + money(d.loanPMT)+'/'+T("perMonthShort")+' · '+d.loanRate+'% · '+d.loanMonths+' '+T("monthsShort")+'</div>'
+      : '';
 
     var rows = catKeys.map(function(k){
       var v = r.cats[k], pct = r.year>0 ? v/r.year*100 : 0;
       return '<tr>'
         + '<td><span class="sw" style="background:var('+CAT_VAR[k]+')"></span>'+T("cat"+cap(k))
-          + (k==="insurance" ? insBreakdown : '') + '</td>'
+          + (k==="insurance" ? insBreakdown : '') + (k==="financing" ? finBreakdown : '') + '</td>'
         + '<td class="n">'+money(v/12)+'</td>'
         + '<td class="n">'+money(v)+'</td>'
         + '<td style="min-width:110px"><span class="num" style="font-size:11px;color:var(--muted)">'+pct.toFixed(1)+'%</span>'
@@ -772,6 +945,7 @@
           + '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">'
             + '<label class="switch"><input type="checkbox" id="depToggle"'+(d.depIncluded?' checked':'')+'>'
             + '<span class="track"></span>'+T("f_includeDep")+'</label>'
+            + '<button class="btn secondary" id="compareSaveBtn" type="button" style="min-height:34px;padding:0 14px;font-size:12.5px">📌&nbsp;'+T("compareSaveBtn")+'</button>'
             + '<button class="btn secondary" id="printBtn" type="button" style="min-height:34px;padding:0 14px;font-size:12.5px">🖨&nbsp;'+T("printBtn")+'</button>'
           + '</div></div>'
         + '<div class="cap">'+T("chartCap")+' · '+esc(state.manufacturer)+' '+esc(state.model)+' · '
@@ -785,6 +959,55 @@
           + '<tr class="total"><td>'+T("totalRow")+'</td><td class="n">'+money(r.month)+'</td>'
           + '<td class="n">'+money(r.year)+'</td><td class="num" style="font-size:11px;color:var(--muted)">100%</td></tr>'
         + '</tbody></table>'
+      + '</div>'
+      + projectionCardHTML()
+      + compareCardHTML(r, d);
+  }
+
+  function projectionCardHTML(){
+    var pts = projectYears(5);
+    var max = Math.max.apply(null, pts.map(function(p){ return p.total; }).concat([1]));
+    var bars = pts.map(function(p){
+      var h = Math.max(4, Math.round(p.total/max*100));
+      return '<div class="pbar"><div class="pval">'+money(p.total)+'</div>'
+        + '<div class="pfill" style="height:'+h+'%"></div>'
+        + '<div class="plabel">'+p.calYear+'</div></div>';
+    }).join("");
+    return '<div class="chartcard">'
+      + '<h3>'+T("projTitle")+'</h3>'
+      + '<div class="cap">'+T("projCap")+'</div>'
+      + '<div class="projRow">'+bars+'</div>'
+      + '</div>';
+  }
+
+  function compareCardHTML(r, d){
+    if(!compareSnap || !compareSnap.vu) return '';
+    var mergedB = Object.assign({}, state, compareSnap.vu, {includeDepreciation: state.includeDepreciation});
+    var rB = compute(mergedB), dB = rB.detail;
+    var catKeysA = relevantCatKeys(d, state);
+    var catKeysB = relevantCatKeys(dB, mergedB);
+    var diff = r.month - rB.month;
+    var winner = Math.abs(diff) < 1 ? T("compareTie")
+      : diff < 0
+        ? esc(state.manufacturer)+' '+esc(state.model)+' '+T("compareCheaperBy")+' '+money(Math.abs(diff))+'/'+T("perMonthShort")
+        : esc(compareSnap.vu.manufacturer)+' '+esc(compareSnap.vu.model)+' '+T("compareCheaperBy")+' '+money(Math.abs(diff))+'/'+T("perMonthShort");
+    return '<div class="chartcard">'
+      + '<div class="head"><h3>'+T("compareTitle")+'</h3>'
+        + '<div style="display:flex;gap:10px;flex-wrap:wrap">'
+          + '<button class="btn secondary" id="compareSwapBtn" type="button" style="min-height:34px;padding:0 14px;font-size:12.5px">🔁&nbsp;'+T("compareSwap")+'</button>'
+          + '<button class="btn secondary" id="compareClearBtn" type="button" style="min-height:34px;padding:0 14px;font-size:12.5px">✕&nbsp;'+T("compareClear")+'</button>'
+        + '</div></div>'
+      + '<div class="compareGrid">'
+        + '<div class="cveh"><div class="cvehName">'+esc(state.manufacturer)+' '+esc(state.model)+' · '+state.year+'</div>'
+          + '<div class="cvehTiles"><div><span class="lbl">'+T("tileMonth")+'</span><span class="val">'+money(r.month)+'</span></div>'
+          + '<div><span class="lbl">'+T("tileYear")+'</span><span class="val">'+money(r.year)+'</span></div></div>'
+          + '<div class="stack mini">'+miniStack(catKeysA, r)+'</div></div>'
+        + '<div class="cveh"><div class="cvehName">'+esc(compareSnap.vu.manufacturer)+' '+esc(compareSnap.vu.model)+' · '+compareSnap.vu.year+'</div>'
+          + '<div class="cvehTiles"><div><span class="lbl">'+T("tileMonth")+'</span><span class="val">'+money(rB.month)+'</span></div>'
+          + '<div><span class="lbl">'+T("tileYear")+'</span><span class="val">'+money(rB.year)+'</span></div></div>'
+          + '<div class="stack mini">'+miniStack(catKeysB, rB)+'</div></div>'
+      + '</div>'
+      + '<div class="compareWinner">'+winner+'</div>'
       + '</div>';
   }
 
@@ -804,7 +1027,7 @@
 
   function buildPrintSheet(){
     var r = compute(state), d = r.detail;
-    var catKeys = CAT_KEYS.filter(function(k){ return k!=="depreciation" || d.depIncluded; });
+    var catKeys = relevantCatKeys(d, state);
     var now = new Date();
     var stamp = now.toLocaleDateString(DICT[lang]._loc) + " " + now.toLocaleTimeString(DICT[lang]._loc, {hour:"2-digit", minute:"2-digit"});
 
@@ -1072,6 +1295,21 @@
       LS.del("ccil.state"); state = Object.assign({}, DEF); pristine = true;
       persist(); renderForms(); renderResults(); toast("info","cleared");
     });
+
+    document.getElementById("shareBtn").addEventListener("click", function(){
+      var payload = { s:state, l:lang, cs:compareSnap };
+      var json = JSON.stringify(payload);
+      var b64 = btoa(unescape(encodeURIComponent(json))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+      var url = location.origin + location.pathname + "#s=" + b64;
+      document.getElementById("shareOut").value = url;
+      toast("ok","shareOk");
+    });
+    document.getElementById("shareCopyBtn").addEventListener("click", function(){
+      var v = document.getElementById("shareOut").value; if(!v) return;
+      (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject())
+        .then(function(){ toast("ok","copyOk"); })
+        .catch(function(){});
+    });
   }
 
   /* ============================ THEME + LANG ============================ */
@@ -1103,9 +1341,23 @@
     }
   });
   document.getElementById("results").addEventListener("click", function(e){
-    if(!e.target.closest("#printBtn")) return;
-    buildPrintSheet();
-    requestAnimationFrame(function(){ window.print(); });
+    if(e.target.closest("#printBtn")){
+      buildPrintSheet();
+      requestAnimationFrame(function(){ window.print(); });
+    } else if(e.target.closest("#compareSaveBtn")){
+      saveCompareSnapshot();
+    } else if(e.target.closest("#compareSwapBtn")){
+      swapCompareSnapshot();
+    } else if(e.target.closest("#compareClearBtn")){
+      clearCompareSnapshot();
+    }
+  });
+  document.getElementById("gridUsage").addEventListener("click", function(e){
+    if(!e.target.closest("#kmCalcApply")) return;
+    var dist = parseFloat(document.getElementById("kmDist").value) || 0;
+    var days = parseFloat(document.getElementById("kmDays").value) || 0;
+    state.km = Math.round(dist * 2 * days * 48);
+    pristine = false; persist(); renderForms(); renderResults();
   });
 
   var settingsDlg = document.getElementById("settingsDialog");
