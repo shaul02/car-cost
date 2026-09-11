@@ -569,6 +569,7 @@
   if(!DICT[lang]) lang = "he";
   var pristine = true;
   var compareSnap = null; // {vu:{...vehicle+usage fields...}, ts}
+  var projOpen = false; // whether the collapsible 5-year projection panel is expanded
   var saved = LS.get("ccil.state");
   if(saved){ try{ state = Object.assign({}, DEF, JSON.parse(saved)); pristine = false; }catch(e){} }
   var savedCmp = LS.get("ccil.compareSnap");
@@ -962,6 +963,9 @@
       + '</div>'
       + projectionCardHTML()
       + compareCardHTML(r, d);
+
+    var projEl = document.getElementById("pProjection");
+    if(projEl) projEl.addEventListener("toggle", function(){ projOpen = projEl.open; });
   }
 
   function projectionCardHTML(){
@@ -973,11 +977,13 @@
         + '<div class="pfill" style="height:'+h+'%"></div>'
         + '<div class="plabel">'+p.calYear+'</div></div>';
     }).join("");
-    return '<div class="chartcard">'
-      + '<h3>'+T("projTitle")+'</h3>'
-      + '<div class="cap">'+T("projCap")+'</div>'
-      + '<div class="projRow">'+bars+'</div>'
-      + '</div>';
+    return '<details class="panel" id="pProjection"'+(projOpen?' open':'')+'>'
+      + '<summary><span class="ic">🔮</span><span>'+T("projTitle")+'</span><span class="chev">›</span></summary>'
+      + '<div class="pbody" style="padding-top:16px">'
+        + '<div class="cap" style="margin-bottom:0">'+T("projCap")+'</div>'
+        + '<div class="projRow">'+bars+'</div>'
+      + '</div>'
+      + '</details>';
   }
 
   function compareCardHTML(r, d){
