@@ -121,6 +121,18 @@
     box-shadow:var(--shadow); padding:20px; margin-top:16px}
   .chartcard h3{font-size:15px; font-weight:600; margin-bottom:4px}
   .chartcard .cap{color:var(--muted); font-size:12.5px; margin-bottom:18px}
+  .chartcard .head{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap}
+  .switch{display:inline-flex; align-items:center; gap:9px; cursor:pointer; user-select:none;
+    font-size:12.5px; font-weight:500; color:var(--ink-2)}
+  .switch input{position:absolute; opacity:0; width:1px; height:1px}
+  .switch .track{width:38px; height:22px; border-radius:999px; background:var(--inset);
+    border:1px solid var(--line); position:relative; flex:0 0 auto; transition:background .15s}
+  .switch .track::after{content:""; position:absolute; top:2px; inset-inline-start:2px;
+    width:16px; height:16px; border-radius:50%; background:var(--surface);
+    box-shadow:0 1px 2px rgba(0,0,0,.25); transition:inset-inline-start .15s}
+  .switch input:checked + .track{background:var(--accent)}
+  .switch input:checked + .track::after{inset-inline-start:18px; background:var(--accent-ink)}
+  .switch input:focus-visible + .track{outline:2.5px solid var(--accent-2); outline-offset:2px}
   .stack{display:flex; gap:2px; width:100%; height:48px; background:var(--inset);
     border-radius:10px; overflow:hidden; padding:2px}
   .stack .seg-b{height:100%; min-width:2px; display:flex; align-items:center; justify-content:center;
@@ -288,8 +300,11 @@
       secCrypto:"שמירה מוצפנת (AES‑256‑GCM)",
       exampleBanner:"מוצג תרחיש לדוגמה. הזן מספר רישוי או ערוך את השדות למטה לחישוב אמיתי.",
       tileMonth:"עלות חודשית", tileYear:"עלות שנתית", tilePerKm:"עלות לק\"מ",
-      tileMonthSub:"ממוצע כולל ירידת ערך", tileYearSub:"סך כל ההוצאות בשנה", tilePerKmSub:"לפי הקילומטראז' שהוזן",
-      chartTitle:"פילוח ההוצאה השנתית", chartCap:"חלוקת העלות בין ששת מרכיבי ההחזקה",
+      tileMonthSub:"ממוצע כולל ירידת ערך", tileMonthSubNoDep:"ממוצע, לא כולל ירידת ערך",
+      tileYearSub:"סך כל ההוצאות בשנה", tilePerKmSub:"לפי הקילומטראז' שהוזן",
+      chartTitle:"פילוח ההוצאה השנתית", chartCap:"חלוקת העלות בין מרכיבי ההחזקה",
+      f_includeDep:"לכלול ירידת ערך", perYearShort:"שנה",
+      depExcludedNote:"ירידת ערך לא נכללת בסכום",
       thCat:"מרכיב", thMonth:"₪ לחודש", thYear:"₪ לשנה", thShare:"נתח",
       catDepreciation:"ירידת ערך", catFuel:"דלק / אנרגיה", catInsurance:"ביטוח",
       catFees:"אגרות ורישוי", catMaintenance:"תחזוקה וטיפולים", catMisc:"צמיגים, בלמים, חניה, חירום",
@@ -331,8 +346,11 @@
       secCrypto:"Encrypted save (AES‑256‑GCM)",
       exampleBanner:"Showing an example scenario. Enter a plate or edit the fields below for a real calculation.",
       tileMonth:"Monthly cost", tileYear:"Annual cost", tilePerKm:"Cost per km",
-      tileMonthSub:"average, depreciation included", tileYearSub:"total spend over a year", tilePerKmSub:"based on the mileage entered",
-      chartTitle:"Annual spend breakdown", chartCap:"How the cost splits across the six ownership components",
+      tileMonthSub:"average, depreciation included", tileMonthSubNoDep:"average, excluding depreciation",
+      tileYearSub:"total spend over a year", tilePerKmSub:"based on the mileage entered",
+      chartTitle:"Annual spend breakdown", chartCap:"How the cost splits across the ownership components",
+      f_includeDep:"Include depreciation", perYearShort:"yr",
+      depExcludedNote:"depreciation excluded from the total",
       thCat:"Component", thMonth:"₪ / month", thYear:"₪ / year", thShare:"Share",
       catDepreciation:"Depreciation", catFuel:"Fuel / energy", catInsurance:"Insurance",
       catFees:"Licence & fees", catMaintenance:"Maintenance & service", catMisc:"Tyres, brakes, parking, emergency",
@@ -374,8 +392,11 @@
       secCrypto:"Зашифрованное сохранение (AES‑256‑GCM)",
       exampleBanner:"Показан пример. Введите номер или измените поля ниже для реального расчёта.",
       tileMonth:"Расходы в месяц", tileYear:"Расходы в год", tilePerKm:"Стоимость за км",
-      tileMonthSub:"в среднем, с учётом амортизации", tileYearSub:"суммарные траты за год", tilePerKmSub:"по указанному пробегу",
-      chartTitle:"Структура годовых расходов", chartCap:"Как стоимость делится между шестью составляющими владения",
+      tileMonthSub:"в среднем, с учётом амортизации", tileMonthSubNoDep:"в среднем, без учёта амортизации",
+      tileYearSub:"суммарные траты за год", tilePerKmSub:"по указанному пробегу",
+      chartTitle:"Структура годовых расходов", chartCap:"Как стоимость делится между составляющими владения",
+      f_includeDep:"Учитывать амортизацию", perYearShort:"год",
+      depExcludedNote:"амортизация не включена в сумму",
       thCat:"Составляющая", thMonth:"₪ / мес", thYear:"₪ / год", thShare:"Доля",
       catDepreciation:"Амортизация", catFuel:"Топливо / энергия", catInsurance:"Страховка",
       catFees:"Госпошлина и регистрация", catMaintenance:"Обслуживание и ТО", catMisc:"Шины, тормоза, парковка, резерв",
@@ -407,7 +428,7 @@
     pollution:4, price:148000, value:0,
     km:15000, consumption:0, fuelPrice:0, parking:0, maint:0, emergency:150,
     driverAge:35, yearsLic:12, claimsFree:4, insType:"comprehensive",
-    compRate:3.2, mandBase:1400, tpBase:1600
+    compRate:3.2, mandBase:1400, tpBase:1600, includeDepreciation:true
   };
   var state = Object.assign({}, DEF);
   var lang = LS.get("ccil.lang") || "he";
@@ -447,8 +468,10 @@
     est = Math.round(est);
     var curVal = num(s.value, 0) > 0 ? num(s.value, 0) : est;
 
-    // depreciation over the coming year
-    var depYear = Math.round(curVal * DEP_RATES[Math.min(age, DEP_RATES.length-1)]);
+    // depreciation over the coming year (raw estimate; toggle decides whether it counts toward the total)
+    var depYearRaw = Math.round(curVal * DEP_RATES[Math.min(age, DEP_RATES.length-1)]);
+    var depIncluded = s.includeDepreciation !== false;
+    var depYear = depIncluded ? depYearRaw : 0;
 
     // licence fee (agrat rishui)
     var pg = Math.max(0, Math.min(15, num(s.pollution, 10)));
@@ -497,7 +520,8 @@
       perKm: km>0 ? year/km : 0,
       detail:{ tires:tires, brakes:brakes, parking:parking, emergency:emergency,
                mandatory:mandatory, thirdParty:thirdParty, comprehensive:comprehensive,
-               ncd:ncd, df:df, km:km, young: dAge<24, isNew: yl<3 }
+               ncd:ncd, df:df, km:km, young: dAge<24, isNew: yl<3,
+               depIncluded:depIncluded, depYearRaw:depYearRaw }
     };
   }
 
@@ -619,14 +643,16 @@
     else tags.push(T("driverTagVet"));
     if(d.ncd>0) tags.push(T("ncdTag")+" −"+Math.round(d.ncd*100)+"%");
 
-    var segs = CAT_KEYS.map(function(k){
+    var catKeys = CAT_KEYS.filter(function(k){ return k!=="depreciation" || d.depIncluded; });
+
+    var segs = catKeys.map(function(k){
       var v = r.cats[k], pct = r.year>0 ? v/r.year*100 : 0;
       var label = pct>=11 ? '<span>'+Math.round(pct)+'%</span>' : '';
       return '<div class="seg-b" style="flex-grow:'+Math.max(v,1)+';background:var('+CAT_VAR[k]+')" '
            + 'title="'+T("cat"+cap(k))+' · '+money(v)+'">'+label+'</div>';
     }).join("");
 
-    var rows = CAT_KEYS.map(function(k){
+    var rows = catKeys.map(function(k){
       var v = r.cats[k], pct = r.year>0 ? v/r.year*100 : 0;
       return '<tr>'
         + '<td><span class="sw" style="background:var('+CAT_VAR[k]+')"></span>'+T("cat"+cap(k))+'</td>'
@@ -639,16 +665,21 @@
 
     var banner = pristine ? '<div class="banner"><span>✳️</span><span>'+T("exampleBanner")+'</span></div>' : '';
 
+    var depCap = d.depIncluded ? ''
+      : ' · '+T("depExcludedNote")+' ('+money(d.depYearRaw)+'/'+T("perYearShort")+')';
+
     el.innerHTML = banner
       + '<div class="tiles">'
-        + tile("lead", "tileMonth", money(r.month), "tileMonthSub")
+        + tile("lead", "tileMonth", money(r.month), d.depIncluded ? "tileMonthSub" : "tileMonthSubNoDep")
         + tile("", "tileYear", money(r.year), "tileYearSub")
         + tile("", "tilePerKm", money1(r.perKm), "tilePerKmSub")
       + '</div>'
       + '<div class="chartcard">'
-        + '<h3>'+T("chartTitle")+'</h3>'
+        + '<div class="head"><h3>'+T("chartTitle")+'</h3>'
+          + '<label class="switch"><input type="checkbox" id="depToggle"'+(d.depIncluded?' checked':'')+'>'
+          + '<span class="track"></span>'+T("f_includeDep")+'</label></div>'
         + '<div class="cap">'+T("chartCap")+' · '+esc(state.manufacturer)+' '+esc(state.model)+' · '
-          + state.year+' · '+T("fuel_"+state.fuel)+' · '+T("f_value")+' ≈ '+money(r.curVal)+'</div>'
+          + state.year+' · '+T("fuel_"+state.fuel)+' · '+T("f_value")+' ≈ '+money(r.curVal)+depCap+'</div>'
         + '<div class="stack" role="img" aria-label="'+T("chartTitle")+'">'+segs+'</div>'
         + '<div class="kv" style="margin-top:14px">'+tags.map(function(x){return '<span>'+x+'</span>';}).join("")+'</div>'
         + '<table class="bd"><thead><tr>'
@@ -909,6 +940,13 @@
     document.documentElement.setAttribute("data-theme", next);
     LS.set("ccil.theme", next);
     updateThemeBtn();
+  });
+
+  document.getElementById("results").addEventListener("change", function(e){
+    if(e.target && e.target.id==="depToggle"){
+      state.includeDepreciation = e.target.checked;
+      pristine = false; persist(); renderResults();
+    }
   });
 
   document.getElementById("langSeg").addEventListener("click", function(e){
