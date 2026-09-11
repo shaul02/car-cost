@@ -61,7 +61,8 @@
     backdrop-filter:blur(10px); border-bottom:1px solid var(--line);}
   .bar{max-width:1080px; margin:0 auto; padding:10px clamp(14px,3vw,28px);
     display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
-  .brand{display:flex; align-items:center; gap:10px; margin-inline-end:auto}
+  .brand{display:flex; align-items:center; gap:10px}
+  #settingsBtn{margin-inline-end:auto}
   .brand .dot{width:26px; height:26px; border-radius:7px; background:var(--plate-yellow);
     border:2px solid var(--plate-ink); display:grid; place-items:center;
     font-family:var(--mono); font-weight:600; font-size:12px; color:var(--plate-ink)}
@@ -243,12 +244,12 @@
       <span class="dot">₪</span>
       <b data-i18n="appTitle">עלות החזקת רכב</b>
     </div>
+    <button class="icobtn" id="settingsBtn" type="button" aria-label="Settings">⚙</button>
     <div class="seg" id="langSeg" role="group" aria-label="Language">
       <button data-lang="he" type="button">עב</button>
       <button data-lang="en" type="button">EN</button>
       <button data-lang="ru" type="button">RU</button>
     </div>
-    <button class="icobtn" id="settingsBtn" type="button" aria-label="Settings">⚙</button>
     <button class="icobtn" id="themeBtn" type="button" aria-label="Theme">◐</button>
   </div>
 </header>
